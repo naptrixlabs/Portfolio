@@ -1,0 +1,678 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!--ARTIFACT-START-->
+<title>Prakash Eppala — iOS Technical Lead</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Prakash Eppala — iOS Technical Lead and mobile architect. 11+ years building BLE-connected healthcare apps, reusable Swift frameworks and shipped App Store products.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100,400;100,600;112,700;112,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout concept: a clinical instrument panel — a fixed telemetry rail of live signal down the left,
+   content set on a 12-column grid with hairline rules, data labelled in mono like a device readout. */
+:root{
+  color-scheme: dark;
+  --ink:#080C12;          /* panel ground */
+  --panel:#101823;        /* raised surface */
+  --panel-2:#16202D;      /* hover / inset */
+  --rule:#202D3D;         /* hairline */
+  --fg:#E7EEF6;           /* readout white */
+  --muted:#8EA1B6;        /* secondary readout */
+  --signal:#45D6C0;       /* live trace (teal) */
+  --pulse:#FF9F45;        /* alert / highlight (amber) */
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --body:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --maxw:1180px;
+  --gutter:max(20px, env(safe-area-inset-left, 0px));
+  --gutter-r:max(20px, env(safe-area-inset-right, 0px));
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    color-scheme: light;
+    --ink:#F4F6F8; --panel:#FFFFFF; --panel-2:#EDF1F5; --rule:#D8E0E8;
+    --fg:#0C1620; --muted:#55687C; --signal:#0C8878; --pulse:#B35600;
+  }
+}
+:root[data-theme="light"]{
+  color-scheme: light;
+  --ink:#F4F6F8; --panel:#FFFFFF; --panel-2:#EDF1F5; --rule:#D8E0E8;
+  --fg:#0C1620; --muted:#55687C; --signal:#0C8878; --pulse:#B35600;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--ink); color:var(--fg);
+  font-family:var(--body); font-size:16px; line-height:1.6;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+img{max-width:100%; display:block}
+a{color:inherit}
+[hidden]{display:none!important}
+::selection{background:var(--signal); color:var(--ink)}
+:focus-visible{outline:2px solid var(--pulse); outline-offset:3px; border-radius:2px}
+
+.wrap{width:100%; max-width:var(--maxw); margin-inline:auto; padding-left:var(--gutter); padding-right:var(--gutter-r)}
+.band{border-top:1px solid var(--rule)}
+.band > .wrap{padding-block:clamp(56px,8vw,104px)}
+
+/* ---------- type ---------- */
+h1,h2,h3,h4{font-family:var(--display); font-weight:800; letter-spacing:-.02em; margin:0; text-wrap:balance; font-stretch:112%}
+h2{font-size:clamp(28px,4.4vw,46px); line-height:1.04}
+h3{font-size:clamp(19px,2.2vw,24px); line-height:1.2; letter-spacing:-.01em}
+p{margin:0}
+.lede{font-size:clamp(16.5px,1.6vw,19px); color:var(--muted); max-width:62ch}
+.mono{font-family:var(--mono); font-size:11.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); font-weight:500}
+.tnum{font-variant-numeric:tabular-nums}
+
+/* section header */
+.shead{display:flex; align-items:baseline; gap:18px; flex-wrap:wrap; margin-bottom:clamp(28px,4vw,46px)}
+.shead .idx{color:var(--signal)}
+.shead .rule{flex:1 1 60px; height:1px; background:var(--rule); min-width:0; transform:translateY(-6px)}
+
+/* ---------- top bar ---------- */
+header.bar{
+  position:sticky; top:env(safe-area-inset-top,0px); z-index:30;
+  background:color-mix(in srgb, var(--ink) 88%, transparent);
+  backdrop-filter:blur(14px) saturate(140%);
+  border-bottom:1px solid var(--rule);
+}
+body::before{content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top,0px); background:var(--ink); z-index:31}
+.bar .wrap{display:flex; align-items:center; gap:20px; min-height:60px; padding-block:10px}
+.sig{display:flex; align-items:center; gap:10px; font-family:var(--display); font-weight:800; letter-spacing:-.01em; font-size:16px; text-decoration:none; white-space:nowrap}
+.blip{width:9px; height:9px; border-radius:50%; background:var(--signal); box-shadow:0 0 0 0 color-mix(in srgb,var(--signal) 70%, transparent); animation:ping 2.6s ease-out infinite; flex:none}
+@keyframes ping{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--signal) 60%,transparent)}70%{box-shadow:0 0 0 10px transparent}100%{box-shadow:0 0 0 0 transparent}}
+nav.links{margin-left:auto; display:flex; gap:4px; align-items:center}
+nav.links a{
+  font-family:var(--mono); font-size:11.5px; letter-spacing:.12em; text-transform:uppercase;
+  text-decoration:none; color:var(--muted); padding:8px 11px; border-radius:3px; position:relative; transition:color .2s ease, background .2s ease;
+}
+nav.links a:hover{color:var(--fg); background:var(--panel-2)}
+nav.links a[aria-current="true"]{color:var(--signal)}
+nav.links a[aria-current="true"]::after{content:""; position:absolute; left:11px; right:11px; bottom:3px; height:1px; background:var(--signal)}
+@media (max-width:860px){ nav.links{display:none} }
+.availability{margin-left:auto; display:flex; align-items:center; gap:8px}
+@media (min-width:861px){ .availability{margin-left:18px} }
+.chip{
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.12em; text-transform:uppercase;
+  border:1px solid var(--rule); padding:6px 10px; border-radius:999px; color:var(--signal); white-space:nowrap;
+}
+
+/* ---------- hero ---------- */
+.hero{position:relative; overflow:hidden; border-bottom:1px solid var(--rule)}
+#trace{position:absolute; inset:auto 0 0 0; width:100%; height:62%; opacity:.5; pointer-events:none}
+.hero .wrap{position:relative; z-index:1; padding-block:clamp(44px,7vw,86px) clamp(56px,8vw,104px)}
+.hero-grid{display:grid; grid-template-columns:minmax(0,1.45fr) minmax(0,.9fr); gap:clamp(28px,5vw,64px); align-items:end}
+@media (max-width:900px){ .hero-grid{grid-template-columns:1fr; align-items:start} }
+.kicker{display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:22px}
+h1{font-size:clamp(44px,9.2vw,104px); line-height:.92; letter-spacing:-.035em; font-stretch:112%}
+h1 .ln{display:block; overflow:hidden}
+h1 .ln > span{display:block}
+.role{margin-top:26px; font-family:var(--display); font-weight:600; font-stretch:100%; font-size:clamp(18px,2.4vw,26px); letter-spacing:-.01em; line-height:1.25}
+.role em{font-style:normal; color:var(--signal)}
+.hero p.lede{margin-top:18px}
+.cta{display:flex; flex-wrap:wrap; gap:10px; margin-top:32px}
+.btn{
+  display:inline-flex; align-items:center; gap:9px; text-decoration:none; cursor:pointer;
+  font-family:var(--mono); font-size:12px; letter-spacing:.1em; text-transform:uppercase; font-weight:500;
+  padding:12px 17px; border-radius:4px; border:1px solid var(--rule); background:transparent; color:var(--fg);
+  transition:transform .18s cubic-bezier(.2,.7,.3,1), border-color .2s ease, background .2s ease, color .2s ease;
+}
+.btn:hover{transform:translateY(-2px); border-color:var(--signal); color:var(--signal)}
+.btn.primary{background:var(--signal); border-color:var(--signal); color:#04110F}
+.btn.primary:hover{color:#04110F; background:color-mix(in srgb,var(--signal) 86%, white)}
+.btn svg{width:14px;height:14px;flex:none}
+
+/* portrait */
+.portrait{position:relative; max-width:330px; width:100%; margin-inline:auto 0}
+@media (max-width:900px){ .portrait{margin-inline:0; max-width:260px; order:-1} }
+.portrait .frame{position:relative; border:1px solid var(--rule); border-radius:4px; overflow:hidden; background:var(--panel)}
+.portrait img{width:100%; aspect-ratio:760/858; object-fit:cover; filter:grayscale(.25) contrast(1.04)}
+.portrait .frame::after{content:""; position:absolute; inset:0; background:linear-gradient(180deg,transparent 52%, color-mix(in srgb,var(--ink) 72%, transparent) 100%); pointer-events:none}
+.portrait .tag{position:absolute; left:10px; right:10px; bottom:10px; display:flex; justify-content:space-between; gap:10px; z-index:2}
+.portrait .tag span{font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--fg); background:color-mix(in srgb,var(--ink) 70%, transparent); border:1px solid var(--rule); padding:4px 7px; border-radius:3px; backdrop-filter:blur(6px)}
+.corner{position:absolute; width:14px; height:14px; border:1px solid var(--signal); opacity:.8}
+.corner.tl{top:-1px;left:-1px;border-right:0;border-bottom:0}
+.corner.br{bottom:-1px;right:-1px;border-left:0;border-top:0}
+
+/* ---------- metrics ---------- */
+.metrics{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); border:1px solid var(--rule); border-radius:5px; overflow:hidden; background:var(--panel)}
+@media (max-width:760px){ .metrics{grid-template-columns:repeat(2,minmax(0,1fr))} }
+.metric{padding:clamp(18px,2.6vw,26px); border-right:1px solid var(--rule); min-width:0}
+.metric:last-child{border-right:0}
+@media (max-width:760px){
+  .metric:nth-child(2n){border-right:0}
+  .metric:nth-child(-n+2){border-bottom:1px solid var(--rule)}
+}
+.metric .val{font-family:var(--display); font-weight:800; font-stretch:112%; font-size:clamp(32px,5vw,46px); line-height:1; letter-spacing:-.03em; font-variant-numeric:tabular-nums}
+.metric .val i{font-style:normal; color:var(--signal)}
+.metric .lbl{margin-top:10px; display:block}
+
+/* ---------- work ---------- */
+.work{display:grid; gap:14px}
+.card{
+  position:relative; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.25fr); gap:clamp(16px,3vw,40px);
+  background:var(--panel); border:1px solid var(--rule); border-radius:5px; padding:clamp(20px,3vw,30px);
+  transition:border-color .25s ease, transform .25s cubic-bezier(.2,.7,.3,1), background .25s ease;
+}
+@media (max-width:820px){ .card{grid-template-columns:1fr; gap:14px} }
+.card:hover{border-color:color-mix(in srgb,var(--signal) 55%, var(--rule)); transform:translateY(-3px); background:var(--panel-2)}
+.card::before{content:""; position:absolute; left:-1px; top:14px; bottom:14px; width:2px; background:var(--signal); border-radius:2px; transform:scaleY(0); transform-origin:top; transition:transform .35s cubic-bezier(.2,.7,.3,1)}
+.card:hover::before{transform:scaleY(1)}
+.card .meta{display:flex; flex-direction:column; gap:10px; min-width:0}
+.card h3 a{text-decoration:none; background-image:linear-gradient(var(--signal),var(--signal)); background-size:0% 1px; background-repeat:no-repeat; background-position:0 100%; transition:background-size .3s ease}
+.card h3 a:hover{background-size:100% 1px; color:var(--signal)}
+.card .where{color:var(--muted); font-size:14.5px}
+.bullets{list-style:none; margin:0; padding:0; display:grid; gap:9px; min-width:0}
+.bullets li{position:relative; padding-left:19px; font-size:15px; color:var(--muted)}
+.bullets li::before{content:""; position:absolute; left:0; top:.66em; width:7px; height:1px; background:var(--signal)}
+.bullets li b{color:var(--fg); font-weight:600}
+.stack{display:flex; flex-wrap:wrap; gap:6px; margin-top:4px}
+.stack span{font-family:var(--mono); font-size:10.5px; letter-spacing:.07em; color:var(--muted); border:1px solid var(--rule); padding:4px 8px; border-radius:3px; background:var(--ink)}
+
+/* ---------- timeline ---------- */
+.tl{display:grid; gap:0; border-top:1px solid var(--rule)}
+.job{display:grid; grid-template-columns:150px minmax(0,1fr); gap:clamp(16px,4vw,48px); padding-block:clamp(24px,3.4vw,38px); border-bottom:1px solid var(--rule); position:relative}
+@media (max-width:760px){ .job{grid-template-columns:1fr; gap:12px} }
+.job .when{display:flex; flex-direction:column; gap:6px}
+.job .when .yr{font-family:var(--mono); font-size:12.5px; color:var(--signal); letter-spacing:.04em}
+.job .when .dur{font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted)}
+.job .body{min-width:0}
+.job .co{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:6px}
+.job .co .org{font-family:var(--mono); font-size:12.5px; color:var(--pulse); letter-spacing:.05em}
+.job .proj{color:var(--muted); font-size:14.5px; margin:8px 0 14px}
+
+/* ---------- expertise ---------- */
+.skills{display:grid; grid-template-columns:repeat(auto-fit,minmax(248px,1fr)); gap:1px; background:var(--rule); border:1px solid var(--rule); border-radius:5px; overflow:hidden}
+.skill{background:var(--ink); padding:clamp(18px,2.4vw,24px); min-width:0; transition:background .25s ease}
+.skill:hover{background:var(--panel)}
+.skill h4{font-size:14px; font-weight:700; font-stretch:100%; letter-spacing:0; margin-bottom:12px; display:flex; align-items:center; gap:9px}
+.skill h4::before{content:""; width:5px; height:5px; background:var(--signal); border-radius:1px; flex:none}
+.skill ul{list-style:none; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:6px}
+.skill li{font-family:var(--mono); font-size:11.5px; color:var(--muted); letter-spacing:.02em}
+.skill li::after{content:"·"; margin-left:6px; color:var(--rule)}
+.skill li:last-child::after{content:""}
+
+/* ---------- about / contact ---------- */
+.two{display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr); gap:clamp(26px,5vw,64px)}
+@media (max-width:820px){ .two{grid-template-columns:1fr} }
+.facts{display:grid; gap:0; border-top:1px solid var(--rule)}
+.fact{display:grid; grid-template-columns:120px minmax(0,1fr); gap:16px; padding-block:13px; border-bottom:1px solid var(--rule); align-items:baseline; font-size:15px}
+.fact .k{font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted)}
+.strengths{display:grid; gap:10px; margin-top:22px; list-style:none; padding:0}
+.strengths li{display:flex; gap:11px; align-items:flex-start; font-size:15px; color:var(--muted)}
+.strengths li svg{width:15px; height:15px; color:var(--signal); flex:none; margin-top:4px}
+
+.contact-row{display:flex; flex-wrap:wrap; gap:10px; margin-top:26px}
+.copy{display:inline-flex; align-items:center; gap:9px; font-family:var(--mono); font-size:13px; border:1px solid var(--rule); background:var(--panel); color:var(--fg); padding:12px 15px; border-radius:4px; cursor:pointer; transition:border-color .2s ease, color .2s ease}
+.copy:hover{border-color:var(--signal); color:var(--signal)}
+.copy[data-done="1"]{border-color:var(--signal); color:var(--signal)}
+
+footer.foot{border-top:1px solid var(--rule); background:var(--panel)}
+footer.foot .wrap{padding-block:26px; display:flex; flex-wrap:wrap; gap:14px 24px; align-items:center; justify-content:space-between}
+footer.foot a{color:var(--muted); text-decoration:none; font-family:var(--mono); font-size:12px; letter-spacing:.06em}
+footer.foot a:hover{color:var(--signal)}
+
+/* ---------- motion ---------- */
+.js .rv{opacity:0; transform:translateY(16px)}
+.js .rv.in{opacity:1; transform:none; transition:opacity .6s ease, transform .7s cubic-bezier(.2,.7,.3,1)}
+.js .rv.in[style*="--d"]{transition-delay:var(--d)}
+.js h1 .ln > span{transform:translateY(102%); animation:rise .9s cubic-bezier(.16,.84,.32,1) forwards}
+.js h1 .ln:nth-child(2) > span{animation-delay:.09s}
+.js .hero .fade{opacity:0; animation:fade .8s ease forwards}
+.js .hero .fade.d1{animation-delay:.28s}
+.js .hero .fade.d2{animation-delay:.4s}
+.js .hero .fade.d3{animation-delay:.52s}
+.js .hero .fade.d4{animation-delay:.16s}
+@keyframes rise{to{transform:none}}
+@keyframes fade{to{opacity:1}}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms!important; animation-iteration-count:1!important; transition-duration:.001ms!important}
+  .js .rv{opacity:1; transform:none}
+  .js h1 .ln > span{transform:none}
+  .js .hero .fade{opacity:1}
+}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="wrap">
+    <a class="sig" href="#top"><span class="blip" aria-hidden="true"></span>Prakash&nbsp;Eppala</a>
+    <nav class="links" aria-label="Sections">
+      <a href="#work">Work</a>
+      <a href="#experience">Experience</a>
+      <a href="#expertise">Expertise</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <div class="availability"><span class="chip">Open to iOS lead roles</span></div>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <canvas id="trace" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <div class="kicker fade d4">
+          <span class="mono">Hyderabad, India — remote / global</span>
+          <span class="mono" style="color:var(--signal)">11+ yrs native iOS</span>
+        </div>
+        <h1>
+          <span class="ln"><span>Prakash</span></span>
+          <span class="ln"><span>Eppala</span></span>
+        </h1>
+        <p class="role fade d1">iOS Technical Lead &amp; Mobile Architect — <em>BLE-connected healthcare apps</em>, reusable Swift frameworks, shipped App Store products.</p>
+        <p class="lede fade d2">I lead small iOS teams and own the architecture under them: clean module boundaries in Swift and SwiftUI, Bluetooth stacks that stay connected in real clinical settings, 85%+ test coverage, and the full release pipeline from TestFlight to hotfix.</p>
+        <div class="cta fade d3">
+          <a class="btn primary" href="#work">See selected work
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+          </a>
+          <a class="btn" href="https://www.linkedin.com/in/prakash-eppala" target="_blank" rel="noopener">LinkedIn</a>
+          <a class="btn" href="https://github.com/prakash-eppala" target="_blank" rel="noopener">GitHub</a>
+          <a class="btn" href="assets/Prakash-Eppala-Resume.pdf" target="_blank" rel="noopener">Résumé (PDF)</a>
+        </div>
+      </div>
+      <figure class="portrait fade d4" style="margin:0">
+        <div class="frame">
+          <span class="corner tl" aria-hidden="true"></span>
+          <span class="corner br" aria-hidden="true"></span>
+          <img src="assets/prakash-eppala.jpg" width="760" height="858" alt="Prakash Eppala" fetchpriority="high">
+          <div class="tag"><span>iOS Technical Lead</span><span>Est. 2014</span></div>
+        </div>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <div class="metrics rv">
+      <div class="metric"><div class="val"><span data-count="11">11</span><i>+</i></div><span class="mono lbl">Years native iOS</span></div>
+      <div class="metric"><div class="val"><span data-count="6">6</span></div><span class="mono lbl">Engineers led</span></div>
+      <div class="metric"><div class="val"><span data-count="85">85</span><i>%</i></div><span class="mono lbl">Automated coverage</span></div>
+      <div class="metric"><div class="val"><span data-count="3">3</span></div><span class="mono lbl">Domains shipped</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="work">
+  <div class="wrap">
+    <div class="shead rv">
+      <span class="mono idx">01 — Selected work</span>
+      <span class="rule" aria-hidden="true"></span>
+    </div>
+    <h2 class="rv" style="margin-bottom:clamp(24px,3vw,36px); max-width:18ch">Products I architected, shipped and still answer for.</h2>
+    <div class="work">
+
+      <article class="card rv">
+        <div class="meta">
+          <h3>CGM Healthcare Platform</h3>
+          <p class="where">Innominds · iOS Technical Lead · 2025 – 2026</p>
+          <div class="stack"><span>Swift</span><span>SwiftUI</span><span>CoreBluetooth</span><span>Firestore</span><span>Combine</span><span>Datadog</span><span>ChatGPT API</span></div>
+        </div>
+        <ul class="bullets">
+          <li>Scalable continuous glucose monitoring app with BLE medical devices over CoreBluetooth, built on clean module boundaries and a single data flow.</li>
+          <li>A rewritten BLE communication layer improved connection reliability by <b>40%</b> and cut device-sync failures in real clinical environments.</li>
+          <li>Real-time Firestore sync for multi-device access with offline-first consistency, plus AI health insights and an LLM-powered in-app chatbot.</li>
+          <li>Led and mentored <b>6 iOS engineers</b>; instituted TDD and code review to <b>85%+</b> coverage in XCTest/XCUITest.</li>
+        </ul>
+      </article>
+
+      <article class="card rv">
+        <div class="meta">
+          <h3>Private Aviation Booking Platform</h3>
+          <p class="where">UST · Senior iOS Engineer · 2023 – 2025</p>
+          <div class="stack"><span>Swift</span><span>Clean Architecture</span><span>GraphQL</span><span>Server-Driven UI</span><span>XCTest</span></div>
+        </div>
+        <ul class="bullets">
+          <li>High-traffic booking and fleet-management app using server-driven UI, so screens change without shipping an App Store update.</li>
+          <li>GraphQL migration removed data over-fetching and cut response payload size by <b>30%</b>.</li>
+          <li>Reusable modular feature components on Clean Architecture, improving testability and new-engineer onboarding time.</li>
+        </ul>
+      </article>
+
+      <article class="card rv">
+        <div class="meta">
+          <h3><a href="https://github.com/prakash-eppala/SecureVault" target="_blank" rel="noopener">SecureVault</a></h3>
+          <p class="where">Author · Swift Package &amp; CocoaPod · Open source</p>
+          <div class="stack"><span>Swift 6</span><span>CryptoKit</span><span>Secure Enclave</span><span>Keychain</span><span>SQLite</span><span>SPM</span></div>
+        </div>
+        <ul class="bullets">
+          <li>Policy-driven secure storage SDK: apps declare <b>how sensitive</b> data is, SecureVault decides where and how to store it — Keychain, encrypted files or encrypted SQLite — and <b>fails closed</b> when the policy can't be met.</li>
+          <li>Keys bound to the Secure Enclave and data-protection classes, with biometric gating and ECIES on CryptoKit.</li>
+          <li>Crash-safe key rotation, migration and recovery, with tamper detection on encrypted data and files.</li>
+          <li>One module for async/await, Objective-C and SwiftUI (<code>@SecureStorage</code>, <code>BiometricGate</code>), zero dependencies.</li>
+        </ul>
+      </article>
+
+      <article class="card rv">
+        <div class="meta">
+          <h3><a href="https://apps.apple.com/in/app/vive-move/id6800129617" target="_blank" rel="noopener">Vive Move</a></h3>
+          <p class="where">Creator · Solo-built, on the App Store · 2026 – present</p>
+          <div class="stack"><span>Flutter</span><span>Riverpod</span><span>HealthKit</span><span>Node.js</span><span>PostgreSQL</span><span>React</span><span>Railway</span></div>
+        </div>
+        <ul class="bullets">
+          <li>Privacy-first fitness and nutrition companion: goals, meal logging, weight, daily steps, GPS workouts and progress charts in one place.</li>
+          <li>Food logging over a <b>1,000-item Indian nutrition catalog</b>, with Apple Health / Health Connect sync and live GPS route tracking.</li>
+          <li>Node.js auth gateway issuing 15-minute JWTs with hashed, rotating refresh tokens and replay detection; RBAC, rate limiting, <b>36 Jest suites</b>.</li>
+          <li>React + TypeScript admin console for users, content, analytics and push; CI/CD to Railway.</li>
+        </ul>
+      </article>
+
+      <article class="card rv">
+        <div class="meta">
+          <h3>Enterprise Warehouse &amp; Networking Apps</h3>
+          <p class="where">CommScope · iOS Developer · 2014 – 2021</p>
+          <div class="stack"><span>Objective-C</span><span>Swift</span><span>BLE scanners</span><span>Peer-to-peer</span><span>Firebase</span><span>APNs</span></div>
+        </div>
+        <ul class="bullets">
+          <li>Pick and Pack and Bill of Lading apps used by thousands of enterprise users across <b>7+ years</b> of continuous delivery.</li>
+          <li>Integrated Zebra and Socket Mobile BLE barcode scanners for inventory and warehouse operations.</li>
+          <li>Peer-to-peer communication between iPad and iPod touch for data exchange during Pick and Pack workflows, with reliable offline sync.</li>
+        </ul>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<section class="band" id="experience">
+  <div class="wrap">
+    <div class="shead rv">
+      <span class="mono idx">02 — Experience</span>
+      <span class="rule" aria-hidden="true"></span>
+      <span class="mono">Aug 2014 → present</span>
+    </div>
+    <div class="tl">
+
+      <article class="job rv">
+        <div class="when"><span class="yr tnum">Sep 2025 – Jun 2026</span><span class="dur">Innominds</span></div>
+        <div class="body">
+          <div class="co"><h3>iOS Technical Lead</h3><span class="org">Healthcare IoT / BLE</span></div>
+          <p class="proj">Continuous Glucose Monitoring platform</p>
+          <ul class="bullets">
+            <li>Owned architecture and delivery of a large-scale CGM iOS app; defined module boundaries and data flow.</li>
+            <li>Profiled and fixed performance bottlenecks with Instruments and memory-leak audits; raised crash-free rate with Crashlytics and Datadog.</li>
+            <li>Owned the full App Store pipeline: versioning, TestFlight beta, production release and hotfix strategy.</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="job rv">
+        <div class="when"><span class="yr tnum">Oct 2023 – Sep 2025</span><span class="dur">UST</span></div>
+        <div class="body">
+          <div class="co"><h3>Specialist I — Software Engineering</h3><span class="org">Private Aviation</span></div>
+          <p class="proj">Booking &amp; fleet management platform</p>
+          <ul class="bullets">
+            <li>Built the iOS platform in Swift with server-driven UI for dynamic screen composition.</li>
+            <li>Delivered features end to end with product, design and backend in Agile/Scrum, writing clean and testable code.</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="job rv">
+        <div class="when"><span class="yr tnum">Jan 2022 – Oct 2023</span><span class="dur">Evoke Technologies</span></div>
+        <div class="body">
+          <div class="co"><h3>Senior Technical Associate — iOS</h3><span class="org">Cross-platform</span></div>
+          <p class="proj">Radwell UK mobile app · legacy modernisation</p>
+          <ul class="bullets">
+            <li>Led a team of 4 iOS developers, delivering critical features on schedule through pair programming and iterative design.</li>
+            <li>Refactored a legacy Objective-C codebase to Swift with protocol-based abstractions and modular design.</li>
+            <li>Shipped a Flutter app for Radwell UK across Android and iOS, with REST integration and responsive UI.</li>
+            <li>Established code review, coding standards and architecture guidelines that cut review cycle times.</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="job rv">
+        <div class="when"><span class="yr tnum">Aug 2014 – Dec 2021</span><span class="dur">CommScope</span></div>
+        <div class="body">
+          <div class="co"><h3>Mobile Application Developer — iOS</h3><span class="org">Enterprise</span></div>
+          <p class="proj">Warehouse &amp; logistics apps at enterprise scale</p>
+          <ul class="bullets">
+            <li>Built and maintained native iOS apps in Swift and Objective-C for thousands of users over seven years.</li>
+            <li>Integrated REST APIs with Codable parsing, validation and layered error handling, reducing network-related crashes.</li>
+            <li>Added Firebase Analytics and Crashlytics dashboards that cut issue-resolution time; built XCTest/XCUITest suites to reduce regression risk.</li>
+          </ul>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<section class="band" id="expertise">
+  <div class="wrap">
+    <div class="shead rv">
+      <span class="mono idx">03 — Expertise</span>
+      <span class="rule" aria-hidden="true"></span>
+    </div>
+    <div class="skills rv">
+      <div class="skill"><h4>Languages &amp; UI</h4><ul><li>Swift</li><li>Objective-C</li><li>SwiftUI</li><li>UIKit</li><li>iOS SDK</li><li>Combine</li><li>Async/Await</li><li>Swift Concurrency</li><li>Xcode</li></ul></div>
+      <div class="skill"><h4>Architecture</h4><ul><li>MVVM</li><li>VIPER</li><li>Clean Architecture</li><li>Modular Architecture</li><li>POP</li><li>Dependency Injection</li><li>Coordinator</li><li>MVC</li></ul></div>
+      <div class="skill"><h4>APIs &amp; Connectivity</h4><ul><li>REST</li><li>GraphQL</li><li>WebSockets</li><li>BLE</li><li>CoreBluetooth</li><li>MQTT</li><li>APNs</li></ul></div>
+      <div class="skill"><h4>Performance &amp; Security</h4><ul><li>ARC</li><li>Instruments profiling</li><li>Memory management</li><li>App security</li><li>Keychain Services</li></ul></div>
+      <div class="skill"><h4>Data &amp; Persistence</h4><ul><li>Core Data</li><li>SQLite</li><li>Codable</li><li>HealthKit</li><li>UserDefaults</li></ul></div>
+      <div class="skill"><h4>Cloud, AI &amp; Monitoring</h4><ul><li>Firebase Firestore</li><li>Analytics</li><li>Crashlytics</li><li>Remote Config</li><li>Datadog</li><li>LLM integration</li><li>ChatGPT API</li><li>CoreML</li></ul></div>
+      <div class="skill"><h4>Testing &amp; DevOps</h4><ul><li>TDD</li><li>XCTest</li><li>XCUITest</li><li>85%+ coverage</li><li>SPM</li><li>CocoaPods</li><li>Fastlane</li><li>TestFlight</li><li>CI/CD</li></ul></div>
+      <div class="skill"><h4>Process &amp; Domains</h4><ul><li>Agile</li><li>Scrum</li><li>Code review</li><li>Healthcare IoT</li><li>Private aviation</li><li>Enterprise mobile</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="about">
+  <div class="wrap">
+    <div class="shead rv">
+      <span class="mono idx">04 — About</span>
+      <span class="rule" aria-hidden="true"></span>
+    </div>
+    <div class="two">
+      <div class="rv">
+        <h2 style="max-width:16ch; margin-bottom:20px">Eleven years in one discipline, done properly.</h2>
+        <p class="lede">I started on Objective-C warehouse apps at CommScope in 2014 and have stayed close to the device ever since — barcode scanners, then glucose sensors. The work I'm best at sits where Bluetooth meets architecture: keeping a radio link honest while the codebase above it stays modular, tested and easy for the next engineer to pick up.</p>
+        <p class="lede" style="margin-top:16px">Alongside leading teams, I build and publish my own: SecureVault, an open-source iOS security SDK, and Vive Move, a Flutter fitness app on the App Store with its own Node.js backend and React admin console.</p>
+        <ul class="strengths">
+          <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5"/></svg>Team leadership and mentoring, 4–6 engineers</li>
+          <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5"/></svg>Architecture ownership and technical reviews</li>
+          <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5"/></svg>Full App Store release management</li>
+          <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5"/></svg>Reusable framework and SPM package design</li>
+        </ul>
+      </div>
+      <div class="rv" style="--d:.08s">
+        <div class="facts">
+          <div class="fact"><span class="k">Education</span><span>B.Tech, Computer Science &amp; Engineering — CVR College of Engineering, Hyderabad, 2014</span></div>
+          <div class="fact"><span class="k">Based in</span><span>Hyderabad, India</span></div>
+          <div class="fact"><span class="k">Authorisation</span><span>India — open to remote and global opportunities</span></div>
+          <div class="fact"><span class="k">Open to</span><span>iOS Technical Lead · Senior iOS Engineer · Staff iOS Engineer · Mobile Architect</span></div>
+          <div class="fact"><span class="k">Domains</span><span>Healthcare IoT &amp; BLE · Private aviation · Enterprise mobile</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="contact">
+  <div class="wrap">
+    <div class="shead rv">
+      <span class="mono idx">05 — Contact</span>
+      <span class="rule" aria-hidden="true"></span>
+    </div>
+    <div class="two">
+      <div class="rv">
+        <h2 style="max-width:15ch">Hiring for an iOS team? Let's talk.</h2>
+        <p class="lede" style="margin-top:18px">The fastest route is email. I reply to anything specific about the role, the product and the team shape.</p>
+        <div class="contact-row">
+          <button class="copy" type="button" id="copy-email" data-copy="prakash.eppala@gmail.com">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="width:14px;height:14px" aria-hidden="true"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5"/><path d="M10.5 3.5H3a.5.5 0 0 0-.5.5v7.5"/></svg>
+            <span>prakash.eppala@gmail.com</span>
+          </button>
+          <button class="copy" type="button" id="copy-phone" data-copy="+91 81432 05930">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="width:14px;height:14px" aria-hidden="true"><rect x="4.5" y="1.5" width="7" height="13" rx="1.6"/><path d="M7 12.5h2"/></svg>
+            <span class="tnum">+91 81432 05930</span>
+          </button>
+        </div>
+      </div>
+      <div class="rv" style="--d:.08s">
+        <div class="facts">
+          <div class="fact"><span class="k">LinkedIn</span><span><a href="https://www.linkedin.com/in/prakash-eppala" target="_blank" rel="noopener" style="color:var(--signal); text-decoration:none">linkedin.com/in/prakash-eppala</a></span></div>
+          <div class="fact"><span class="k">GitHub</span><span><a href="https://github.com/prakash-eppala" target="_blank" rel="noopener" style="color:var(--signal); text-decoration:none">github.com/prakash-eppala</a></span></div>
+          <div class="fact"><span class="k">App Store</span><span><a href="https://apps.apple.com/in/app/vive-move/id6800129617" target="_blank" rel="noopener" style="color:var(--signal); text-decoration:none">Vive Move</a></span></div>
+          <div class="fact"><span class="k">Résumé</span><span><a href="assets/Prakash-Eppala-Resume.pdf" target="_blank" rel="noopener" style="color:var(--signal); text-decoration:none">Prakash-Eppala-Resume.pdf</a></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="wrap">
+    <span class="mono">© <span id="yr">2026</span> Prakash Eppala — iOS Technical Lead</span>
+    <span style="display:flex; gap:20px; flex-wrap:wrap">
+      <a href="https://www.linkedin.com/in/prakash-eppala" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://github.com/prakash-eppala" target="_blank" rel="noopener">GitHub</a>
+      <a href="#top">Back to top</a>
+    </span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var root = document.documentElement;
+  root.classList.add('js');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var y = document.getElementById('yr'); if (y) y.textContent = new Date().getFullYear();
+
+  /* ---- scroll reveal ---- */
+  var rv = document.querySelectorAll('.rv');
+  if ('IntersectionObserver' in window && !reduce) {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+    rv.forEach(function(el){ io.observe(el); });
+  } else {
+    rv.forEach(function(el){ el.classList.add('in'); });
+  }
+
+  /* ---- count-up metrics ---- */
+  var counted = false;
+  function countUp(){
+    if (counted || reduce) return; counted = true;
+    document.querySelectorAll('[data-count]').forEach(function(el){
+      var end = parseInt(el.getAttribute('data-count'), 10), t0 = null, dur = 900;
+      function step(ts){
+        if (!t0) t0 = ts;
+        var p = Math.min(1, (ts - t0) / dur);
+        el.textContent = Math.round(end * (1 - Math.pow(1 - p, 3)));
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    });
+  }
+  var mroot = document.querySelector('.metrics');
+  if (mroot && 'IntersectionObserver' in window) {
+    new IntersectionObserver(function(es, ob){
+      if (es[0].isIntersecting) { countUp(); ob.disconnect(); }
+    }, { threshold: 0.4 }).observe(mroot);
+  }
+
+  /* ---- scrollspy ---- */
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('nav.links a'));
+  var sections = navLinks.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  function spy(){
+    var pos = window.scrollY + window.innerHeight * 0.32, cur = -1;
+    sections.forEach(function(s, i){ if (s && s.offsetTop <= pos) cur = i; });
+    navLinks.forEach(function(a, i){
+      if (i === cur) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
+    });
+  }
+  var ticking = false;
+  window.addEventListener('scroll', function(){
+    if (!ticking) { ticking = true; requestAnimationFrame(function(){ spy(); ticking = false; }); }
+  }, { passive: true });
+  spy();
+
+  /* ---- copy buttons ---- */
+  document.querySelectorAll('.copy').forEach(function(btn){
+    var label = btn.querySelector('span'), original = label.textContent;
+    btn.addEventListener('click', function(){
+      var text = btn.getAttribute('data-copy');
+      function done(){
+        btn.setAttribute('data-done', '1'); label.textContent = 'Copied';
+        setTimeout(function(){ label.textContent = original; btn.removeAttribute('data-done'); }, 1600);
+      }
+      function fallback(){
+        var r = document.createRange(); r.selectNodeContents(label);
+        var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, fallback);
+      } else { fallback(); }
+    });
+  });
+
+  /* ---- hero telemetry trace: a live BLE/CGM-style signal under the headline ---- */
+  var cv = document.getElementById('trace');
+  if (cv && cv.getContext) {
+    var ctx = cv.getContext('2d'), w = 0, h = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
+    function size(){
+      var r = cv.getBoundingClientRect();
+      w = Math.max(1, r.width); h = Math.max(1, r.height);
+      cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    function css(v){ return getComputedStyle(root).getPropertyValue(v).trim() || '#45D6C0'; }
+    function curve(t, amp, k, phase){
+      // a glucose-like trace: slow drift with post-meal excursions
+      ctx.beginPath();
+      for (var x = 0; x <= w; x += 2) {
+        var u = x / Math.max(w, 1);
+        var v = Math.sin(u * 6.1 * k + t + phase) * 0.55
+              + Math.sin(u * 13.7 * k - t * 1.35 + phase) * 0.26
+              + Math.sin(u * 2.3 * k + t * 0.55) * 0.42;
+        var yv = h * 0.58 - v * amp;
+        if (x === 0) ctx.moveTo(x, yv); else ctx.lineTo(x, yv);
+      }
+      ctx.stroke();
+    }
+    function grid(){
+      ctx.save();
+      ctx.strokeStyle = css('--rule'); ctx.globalAlpha = 0.55; ctx.lineWidth = 1;
+      for (var gy = h; gy > 0; gy -= 46) { ctx.beginPath(); ctx.moveTo(0, gy + 0.5); ctx.lineTo(w, gy + 0.5); ctx.stroke(); }
+      for (var gx = 0; gx < w; gx += 46) { ctx.beginPath(); ctx.moveTo(gx + 0.5, 0); ctx.lineTo(gx + 0.5, h); ctx.stroke(); }
+      ctx.restore();
+    }
+    var t = 0, raf = null;
+    function frame(){
+      ctx.clearRect(0, 0, w, h);
+      grid();
+      var sig = css('--signal'), pul = css('--pulse');
+      ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+      ctx.save(); ctx.globalAlpha = 0.22; ctx.strokeStyle = pul; ctx.lineWidth = 1.2;
+      curve(t * 0.6, h * 0.17, 0.7, 1.9); ctx.restore();
+      ctx.save(); ctx.globalAlpha = 0.5; ctx.strokeStyle = sig; ctx.lineWidth = 1.6;
+      ctx.shadowColor = sig; ctx.shadowBlur = 14;
+      curve(t, h * 0.24, 1, 0); ctx.restore();
+      if (!reduce) { t += 0.006; raf = requestAnimationFrame(frame); }
+    }
+    function start(){ size(); if (raf) cancelAnimationFrame(raf); raf = null; frame(); }
+    var rt;
+    window.addEventListener('resize', function(){ clearTimeout(rt); rt = setTimeout(start, 140); });
+    document.addEventListener('visibilitychange', function(){
+      if (document.hidden) { if (raf) cancelAnimationFrame(raf); raf = null; }
+      else if (!reduce && !raf) frame();
+    });
+    start();
+  }
+})();
+</script>
+<!--ARTIFACT-END-->
+</body>
+</html>
