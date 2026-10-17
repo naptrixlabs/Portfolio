@@ -33,6 +33,23 @@ python3 -m http.server 8000
 Pushing to `main` publishes to GitHub Pages via the included workflow.
 Enable it once under **Settings → Pages → Build and deployment → Source: GitHub Actions**.
 
+### Custom domain
+
+The site serves from **https://prakash.eppala.naptrixlabs.com** (set in `CNAME`).
+
+Add this record at the DNS host for `naptrixlabs.com`:
+
+| Type  | Name              | Value                   | TTL  |
+|-------|-------------------|-------------------------|------|
+| CNAME | `prakash.eppala`  | `naptrixlabs.github.io.`| 3600 |
+
+Then in **Settings → Pages → Custom domain** enter `prakash.eppala.naptrixlabs.com`,
+wait for the DNS check to pass, and tick **Enforce HTTPS** once the certificate is issued
+(usually a few minutes, up to 24 hours).
+
+If the DNS host is Cloudflare, set the record to **DNS only** (grey cloud) until GitHub has
+issued the certificate, then proxying can be turned back on.
+
 ## Contact
 
 - Email: prakash.eppala@gmail.com
