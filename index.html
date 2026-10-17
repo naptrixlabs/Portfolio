@@ -173,6 +173,13 @@ h1 .ln > span{display:block}
 .bullets li b{color:var(--fg); font-weight:600}
 .stack{display:flex; flex-wrap:wrap; gap:6px; margin-top:4px}
 .stack span{font-family:var(--mono); font-size:10.5px; letter-spacing:.07em; color:var(--muted); border:1px solid var(--rule); padding:4px 8px; border-radius:3px; background:var(--ink)}
+.card.studio{border-color:color-mix(in srgb,var(--pulse) 34%, var(--rule))}
+.card.studio::before{background:var(--pulse)}
+.card.studio:hover{border-color:color-mix(in srgb,var(--pulse) 62%, var(--rule))}
+.card.studio h3 a{background-image:linear-gradient(var(--pulse),var(--pulse))}
+.card.studio h3 a:hover{color:var(--pulse)}
+.card.studio .bullets li::before{background:var(--pulse)}
+.now{font-family:var(--mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--pulse); border:1px solid color-mix(in srgb,var(--pulse) 40%, var(--rule)); padding:3px 7px; border-radius:999px; align-self:flex-start}
 
 /* ---------- timeline ---------- */
 .tl{display:grid; gap:0; border-top:1px solid var(--rule)}
@@ -309,6 +316,20 @@ footer.foot a:hover{color:var(--signal)}
     </div>
     <h2 class="rv" style="margin-bottom:clamp(24px,3vw,36px); max-width:18ch">Products I architected, shipped and still answer for.</h2>
     <div class="work">
+
+      <article class="card studio rv">
+        <div class="meta">
+          <span class="now">Now</span>
+          <h3><a href="https://naptrixlabs.com" target="_blank" rel="noopener">Naptrix Labs</a></h3>
+          <p class="where">Founder &middot; Independent mobile product studio &middot; 2026 &ndash; present</p>
+          <div class="stack"><span>iOS</span><span>Swift</span><span>Flutter</span><span>BLE</span><span>Node.js</span><span>Product delivery</span></div>
+        </div>
+        <ul class="bullets">
+          <li>Newly formed studio where I build and ship mobile products end to end &mdash; design, architecture, backend, release and everything after it.</li>
+          <li><b>Vive Move</b> and <b>SecureVault</b> started as personal projects and are its first two shipped products: one live on the App Store, one open source on SPM and CocoaPods.</li>
+          <li>Currently building its own product line, and <b>open to selected client work</b>: iOS architecture reviews, BLE and device integration, and full app delivery.</li>
+        </ul>
+      </article>
 
       <article class="card rv">
         <div class="meta">
@@ -476,7 +497,7 @@ footer.foot a:hover{color:var(--signal)}
       <div class="rv">
         <h2 style="max-width:16ch; margin-bottom:20px">Eleven years in one discipline, done properly.</h2>
         <p class="lede">I started on Objective-C warehouse apps at CommScope in 2014 and have stayed close to the device ever since — barcode scanners, then glucose sensors. The work I'm best at sits where Bluetooth meets architecture: keeping a radio link honest while the codebase above it stays modular, tested and easy for the next engineer to pick up.</p>
-        <p class="lede" style="margin-top:16px">Alongside leading teams, I build and publish my own: SecureVault, an open-source iOS security SDK, and Vive Move, a Flutter fitness app on the App Store with its own Node.js backend and React admin console.</p>
+        <p class="lede" style="margin-top:16px">Alongside leading teams, I build and publish my own. SecureVault, an open-source iOS security SDK, and Vive Move, a Flutter fitness app on the App Store with its own Node.js backend and React admin console, both began as personal projects and now sit under <a href="https://naptrixlabs.com" target="_blank" rel="noopener" style="color:var(--pulse); text-decoration:none">Naptrix Labs</a>, the studio I founded in 2026 to keep shipping them properly.</p>
         <ul class="strengths">
           <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5"/></svg>Team leadership and mentoring, 4–6 engineers</li>
           <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5"/></svg>Architecture ownership and technical reviews</li>
@@ -490,6 +511,7 @@ footer.foot a:hover{color:var(--signal)}
           <div class="fact"><span class="k">Based in</span><span>Hyderabad, India</span></div>
           <div class="fact"><span class="k">Authorisation</span><span>India — open to remote and global opportunities</span></div>
           <div class="fact"><span class="k">Open to</span><span>iOS Technical Lead · Senior iOS Engineer · Staff iOS Engineer · Mobile Architect</span></div>
+          <div class="fact"><span class="k">Studio</span><span>Naptrix Labs — client work in iOS architecture, BLE integration and app delivery</span></div>
           <div class="fact"><span class="k">Domains</span><span>Healthcare IoT &amp; BLE · Private aviation · Enterprise mobile</span></div>
         </div>
       </div>
@@ -532,10 +554,11 @@ footer.foot a:hover{color:var(--signal)}
 
 <footer class="foot">
   <div class="wrap">
-    <span class="mono">© <span id="yr">2026</span> Prakash Eppala — iOS Technical Lead</span>
+    <span class="mono">© <span id="yr">2026</span> Prakash Eppala — built at <a href="https://naptrixlabs.com" target="_blank" rel="noopener" style="color:var(--pulse); text-decoration:none">Naptrix Labs</a></span>
     <span style="display:flex; gap:20px; flex-wrap:wrap">
       <a href="https://www.linkedin.com/in/prakash-eppala" target="_blank" rel="noopener">LinkedIn</a>
       <a href="https://github.com/prakash-eppala" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://naptrixlabs.com" target="_blank" rel="noopener">Naptrix Labs</a>
       <a href="#top">Back to top</a>
     </span>
   </div>
