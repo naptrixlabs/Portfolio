@@ -1,701 +1,2671 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<!--ARTIFACT-START-->
-<title>Prakash Eppala — iOS Technical Lead</title>
-<meta name="claude:viewport-fit-sides" content="cover">
-<meta name="description" content="Prakash Eppala — iOS Technical Lead and mobile architect. 11+ years building BLE-connected healthcare apps, reusable Swift frameworks and shipped App Store products.">
+<title>Prakash Eppala — iOS Technical Lead &amp; Mobile Architect</title>
+<meta name="description" content="Prakash Eppala is an iOS Technical Lead and Mobile Architect with 11+ years designing BLE healthcare platforms, modular Swift frameworks, and production App Store apps.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100,400;100,600;112,700;112,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100,400;100,600;112,700;112,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+
 <style>
-/* Layout concept: a clinical instrument panel — a fixed telemetry rail of live signal down the left,
-   content set on a 12-column grid with hairline rules, data labelled in mono like a device readout. */
-:root{
+/* ==========================================================================
+   DESIGN TOKENS & SYSTEM
+   Clinical instrument panel: precision telemetry, high-contrast readouts,
+   hairline grids, and purposeful Apple/Linear-grade micro-interactions.
+   ========================================================================== */
+:root {
   color-scheme: dark;
-  --ink:#080C12;          /* panel ground */
-  --panel:#101823;        /* raised surface */
-  --panel-2:#16202D;      /* hover / inset */
-  --rule:#202D3D;         /* hairline */
-  --fg:#E7EEF6;           /* readout white */
-  --muted:#8EA1B6;        /* secondary readout */
-  --signal:#45D6C0;       /* live trace (teal) */
-  --pulse:#FF9F45;        /* alert / highlight (amber) */
-  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
-  --body:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
-  --maxw:1180px;
-  --gutter:max(20px, env(safe-area-inset-left, 0px));
-  --gutter-r:max(20px, env(safe-area-inset-right, 0px));
+  --ink: #070B10;
+  --panel: #0E1520;
+  --panel-2: #141E2C;
+  --panel-glass: rgba(14, 21, 32, 0.88);
+  --rule: #1E2B3C;
+  --rule-light: #2A3C52;
+  --fg: #E8EEF5;
+  --fg-bright: #FFFFFF;
+  --muted: #95A9BF;
+  --muted-dark: #9AB0C7;
+  --signal: #3EE0C8;
+  --signal-subtle: rgba(62, 224, 200, 0.12);
+  --pulse: #FFA347;
+  --pulse-subtle: rgba(255, 163, 71, 0.12);
+  --display: "Archivo", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --body: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --maxw: 1200px;
+  --gutter: max(24px, env(safe-area-inset-left, 0px));
+  --gutter-r: max(24px, env(safe-area-inset-right, 0px));
+  --radius-sm: 4px;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
-@media (prefers-color-scheme: light){
-  :root:not([data-theme="dark"]){
-    color-scheme: light;
-    --ink:#F4F6F8; --panel:#FFFFFF; --panel-2:#EDF1F5; --rule:#D8E0E8;
-    --fg:#0C1620; --muted:#55687C; --signal:#0C8878; --pulse:#B35600;
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --ink: #F5F7FA;
+  --panel: #FFFFFF;
+  --panel-2: #EBF0F5;
+  --panel-glass: rgba(255, 255, 255, 0.92);
+  --rule: #D2DCE6;
+  --rule-light: #BAC9D8;
+  --fg: #0B1522;
+  --fg-bright: #04080D;
+  --muted: #4B5E73;
+  --muted-dark: #374759;
+  --signal: #007A6C;
+  --signal-subtle: rgba(0, 122, 108, 0.08);
+  --pulse: #B85900;
+  --pulse-subtle: rgba(184, 89, 0, 0.08);
+}
+
+/* Base resets & typography */
+*, *::before, *::after { box-sizing: border-box; }
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  scroll-padding-top: 76px;
+}
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--fg);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; }
+[hidden] { display: none !important; }
+::selection { background: var(--signal); color: var(--ink); }
+
+/* Accessible focus styling */
+:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/* Accessibility skip link */
+.skip-link {
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  background: var(--signal);
+  color: var(--ink);
+  padding: 10px 18px;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  z-index: 1000;
+  border-radius: var(--radius-sm);
+  transform: translateY(-160%);
+  transition: transform 0.2s var(--ease-out);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+}
+.skip-link:focus { transform: translateY(0); }
+
+/* Layout containers */
+.wrap {
+  width: 100%;
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-left: var(--gutter);
+  padding-right: var(--gutter-r);
+}
+.band {
+  border-top: 1px solid var(--rule);
+  position: relative;
+  padding-top: 64px;
+  padding-bottom: 64px;
+  padding-block: clamp(64px, 8vw, 100px);
+}
+
+/* Typography styles */
+h1, h2, h3, h4 {
+  font-family: var(--display);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  margin: 0;
+  text-wrap: balance;
+  font-stretch: 112%;
+  color: var(--fg-bright);
+}
+h2 {
+  font-size: clamp(28px, 4.4vw, 48px);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+h3 {
+  font-size: clamp(25px, 2.6vw, 30px);
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+}
+p { margin: 0; }
+.lede {
+  font-size: clamp(16.5px, 1.6vw, 19px);
+  line-height: 1.6;
+  color: var(--muted);
+  max-width: 65ch;
+}
+.mono {
+  font-family: var(--mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 500;
+}
+.tnum { font-variant-numeric: tabular-nums; }
+
+/* Section Header */
+.shead {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: clamp(28px, 4vw, 44px);
+}
+.shead .idx {
+  color: var(--signal);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.shead .idx::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 1px;
+  background: var(--signal);
+}
+.shead .rule {
+  flex: 1 1 60px;
+  height: 1px;
+  background: var(--rule);
+  min-width: 0;
+}
+
+/* ==========================================================================
+   TOP NAVIGATION BAR
+   ========================================================================== */
+header.bar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--panel-glass);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border-bottom: 1px solid var(--rule);
+  transition: border-color 0.25s ease;
+}
+.bar-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--signal), var(--pulse));
+  z-index: 52;
+  transition: width 0.1s linear;
+}
+.bar .wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 64px;
+}
+.bar-left {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.sig {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 17px;
+  color: var(--fg-bright);
+  white-space: nowrap;
+}
+.sig-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--signal-subtle);
+  border: 1px solid var(--rule);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--signal);
+  font-weight: 600;
+}
+.sig-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--signal);
+}
+
+nav.links {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+nav.links a {
+  font-family: var(--mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  position: relative;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+nav.links a:hover {
+  color: var(--fg-bright);
+  background: var(--panel-2);
+}
+nav.links a[aria-current="true"] {
+  color: var(--signal);
+  font-weight: 600;
+  background: var(--signal-subtle);
+}
+
+.bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--rule);
+  background: var(--panel);
+  color: var(--fg);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.15s ease, color 0.2s ease;
+}
+.icon-btn:hover {
+  border-color: var(--signal);
+  color: var(--signal);
+  transform: translateY(-1px);
+}
+.icon-btn svg {
+  width: 17px;
+  height: 17px;
+}
+
+.cmd-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+.cmd-pill:hover {
+  border-color: var(--signal);
+  color: var(--fg-bright);
+}
+.cmd-key {
+  padding: 2px 6px;
+  background: var(--panel-2);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  font-size: 11.5px;
+  color: var(--signal);
+}
+
+/* Mobile Hamburger Toggle */
+.menu-toggle {
+  display: none;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--rule);
+  background: var(--panel);
+  color: var(--fg);
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+}
+@media (max-width: 920px) {
+  nav.links { display: none; }
+  .cmd-pill { display: none; }
+  .menu-toggle { display: inline-flex; }
+}
+
+/* Mobile Drawer */
+.mobile-nav {
+  position: fixed;
+  inset: 64px 0 0 0;
+  background: rgba(7, 11, 16, 0.94);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 49;
+  padding: 24px var(--gutter);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-8px);
+  transition: opacity 0.25s ease, transform 0.25s var(--ease-out);
+}
+.mobile-nav.open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+.mobile-nav a {
+  font-family: var(--display);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--fg);
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+.mobile-nav a:hover, .mobile-nav a:focus {
+  color: var(--signal);
+  background: var(--panel);
+  border-color: var(--rule);
+}
+.mobile-nav-foot {
+  margin-top: auto;
+  padding-top: 20px;
+  border-top: 1px solid var(--rule);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ==========================================================================
+   HERO SECTION & CLINICAL TELEMETRY
+   ========================================================================== */
+.hero {
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid var(--rule);
+  background: radial-gradient(ellipse 70% 50% at 50% 0%, var(--signal-subtle) 0%, transparent 75%);
+  padding-top: 64px;
+  padding-bottom: 72px;
+  padding-block: clamp(64px, 8vw, 100px);
+}
+#trace-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.62;
+  pointer-events: auto;
+  cursor: crosshair;
+}
+.hero-telemetry-status {
+  position: absolute;
+  bottom: 16px;
+  left: var(--gutter);
+  right: var(--gutter-r);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted-dark);
+  pointer-events: none;
+  z-index: 2;
+}
+.hero-telemetry-status span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.hero-telemetry-status .live-indicator {
+  color: var(--signal);
+}
+@media (max-width: 680px) {
+  .hero-telemetry-status .extra-meta { display: none; }
+}
+
+.hero .wrap {
+  position: relative;
+  z-index: 2;
+}
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(0, 0.95fr);
+  gap: clamp(32px, 5vw, 68px);
+  align-items: center;
+}
+@media (max-width: 900px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 36px;
   }
 }
-:root[data-theme="light"]{
-  color-scheme: light;
-  --ink:#F4F6F8; --panel:#FFFFFF; --panel-2:#EDF1F5; --rule:#D8E0E8;
-  --fg:#0C1620; --muted:#55687C; --signal:#0C8878; --pulse:#B35600;
+
+.hero-meta-kicker {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+.badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 12px;
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--fg);
+}
+.badge-pill.accent {
+  background: var(--signal-subtle);
+  border-color: var(--rule);
+  color: var(--signal);
+  font-weight: 600;
 }
 
-*,*::before,*::after{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
-body{
-  margin:0; background:var(--ink); color:var(--fg);
-  font-family:var(--body); font-size:16px; line-height:1.6;
-  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+h1.hero-title {
+  font-size: clamp(44px, 8.8vw, 98px);
+  line-height: 0.94;
+  letter-spacing: -0.04em;
+  margin-bottom: 24px;
 }
-img{max-width:100%; display:block}
-a{color:inherit}
-[hidden]{display:none!important}
-::selection{background:var(--signal); color:var(--ink)}
-:focus-visible{outline:2px solid var(--pulse); outline-offset:3px; border-radius:2px}
-
-.wrap{width:100%; max-width:var(--maxw); margin-inline:auto; padding-left:var(--gutter); padding-right:var(--gutter-r)}
-.band{border-top:1px solid var(--rule)}
-.band > .wrap{padding-block:clamp(56px,8vw,104px)}
-
-/* ---------- type ---------- */
-h1,h2,h3,h4{font-family:var(--display); font-weight:800; letter-spacing:-.02em; margin:0; text-wrap:balance; font-stretch:112%}
-h2{font-size:clamp(28px,4.4vw,46px); line-height:1.04}
-h3{font-size:clamp(19px,2.2vw,24px); line-height:1.2; letter-spacing:-.01em}
-p{margin:0}
-.lede{font-size:clamp(16.5px,1.6vw,19px); color:var(--muted); max-width:62ch}
-.mono{font-family:var(--mono); font-size:11.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); font-weight:500}
-.tnum{font-variant-numeric:tabular-nums}
-
-/* section header */
-.shead{display:flex; align-items:baseline; gap:18px; flex-wrap:wrap; margin-bottom:clamp(28px,4vw,46px)}
-.shead .idx{color:var(--signal)}
-.shead .rule{flex:1 1 60px; height:1px; background:var(--rule); min-width:0; transform:translateY(-6px)}
-
-/* ---------- top bar ---------- */
-header.bar{
-  position:sticky; top:env(safe-area-inset-top,0px); z-index:30;
-  background:color-mix(in srgb, var(--ink) 88%, transparent);
-  backdrop-filter:blur(14px) saturate(140%);
-  border-bottom:1px solid var(--rule);
+h1.hero-title span.title-line {
+  display: block;
+  overflow: hidden;
 }
-body::before{content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top,0px); background:var(--ink); z-index:31}
-.bar .wrap{display:flex; align-items:center; gap:20px; min-height:60px; padding-block:10px}
-.sig{display:flex; align-items:center; gap:10px; font-family:var(--display); font-weight:800; letter-spacing:-.01em; font-size:16px; text-decoration:none; white-space:nowrap}
-.blip{width:9px; height:9px; border-radius:50%; background:var(--signal); box-shadow:0 0 0 0 color-mix(in srgb,var(--signal) 70%, transparent); animation:ping 2.6s ease-out infinite; flex:none}
-@keyframes ping{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--signal) 60%,transparent)}70%{box-shadow:0 0 0 10px transparent}100%{box-shadow:0 0 0 0 transparent}}
-nav.links{margin-left:auto; display:flex; gap:4px; align-items:center}
-nav.links a{
-  font-family:var(--mono); font-size:11.5px; letter-spacing:.12em; text-transform:uppercase;
-  text-decoration:none; color:var(--muted); padding:8px 11px; border-radius:3px; position:relative; transition:color .2s ease, background .2s ease;
+h1.hero-title span.title-line > span {
+  display: block;
+  animation: titleRise 0.85s var(--ease-out) forwards;
 }
-nav.links a:hover{color:var(--fg); background:var(--panel-2)}
-nav.links a[aria-current="true"]{color:var(--signal)}
-nav.links a[aria-current="true"]::after{content:""; position:absolute; left:11px; right:11px; bottom:3px; height:1px; background:var(--signal)}
-@media (max-width:860px){ nav.links{display:none} }
-.availability{margin-left:auto; display:flex; align-items:center; gap:8px}
-@media (min-width:861px){ .availability{margin-left:18px} }
-.chip{
-  font-family:var(--mono); font-size:10.5px; letter-spacing:.12em; text-transform:uppercase;
-  border:1px solid var(--rule); padding:6px 10px; border-radius:999px; color:var(--signal); white-space:nowrap;
+h1.hero-title span.title-line:nth-child(2) > span {
+  animation-delay: 0.08s;
+}
+@keyframes titleRise {
+  from { transform: translateY(105%); }
+  to { transform: translateY(0); }
 }
 
-/* ---------- hero ---------- */
-.hero{position:relative; overflow:hidden; border-bottom:1px solid var(--rule)}
-#trace{position:absolute; inset:auto 0 0 0; width:100%; height:62%; opacity:.5; pointer-events:none}
-.hero .wrap{position:relative; z-index:1; padding-block:clamp(44px,7vw,86px) clamp(56px,8vw,104px)}
-.hero-grid{display:grid; grid-template-columns:minmax(0,1.45fr) minmax(0,.9fr); gap:clamp(28px,5vw,64px); align-items:end}
-@media (max-width:900px){ .hero-grid{grid-template-columns:1fr; align-items:start} }
-.kicker{display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:22px}
-h1{font-size:clamp(44px,9.2vw,104px); line-height:.92; letter-spacing:-.035em; font-stretch:112%}
-h1 .ln{display:block; overflow:hidden}
-h1 .ln > span{display:block}
-.role{margin-top:26px; font-family:var(--display); font-weight:600; font-stretch:100%; font-size:clamp(18px,2.4vw,26px); letter-spacing:-.01em; line-height:1.25}
-.role em{font-style:normal; color:var(--signal)}
-.hero p.lede{margin-top:18px}
-.cta{display:flex; flex-wrap:wrap; gap:10px; margin-top:32px}
-.btn{
-  display:inline-flex; align-items:center; gap:9px; text-decoration:none; cursor:pointer;
-  font-family:var(--mono); font-size:12px; letter-spacing:.1em; text-transform:uppercase; font-weight:500;
-  padding:12px 17px; border-radius:4px; border:1px solid var(--rule); background:transparent; color:var(--fg);
-  transition:transform .18s cubic-bezier(.2,.7,.3,1), border-color .2s ease, background .2s ease, color .2s ease;
+.role-headline {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: clamp(19px, 2.3vw, 25px);
+  line-height: 1.4;
+  letter-spacing: -0.015em;
+  color: var(--fg);
+  margin-bottom: 18px;
 }
-.btn:hover{transform:translateY(-2px); border-color:var(--signal); color:var(--signal)}
-.btn.primary{background:var(--signal); border-color:var(--signal); color:#04110F}
-.btn.primary:hover{color:#04110F; background:color-mix(in srgb,var(--signal) 86%, white)}
-.btn svg{width:14px;height:14px;flex:none}
-
-/* portrait */
-.portrait{position:relative; max-width:330px; width:100%; margin-inline:auto 0}
-@media (max-width:900px){ .portrait{margin-inline:0; max-width:260px; order:-1} }
-.portrait .frame{position:relative; border:1px solid var(--rule); border-radius:4px; overflow:hidden; background:var(--panel)}
-.portrait img{width:100%; aspect-ratio:760/858; object-fit:cover; filter:grayscale(.25) contrast(1.04)}
-.portrait .frame::after{content:""; position:absolute; inset:0; background:linear-gradient(180deg,transparent 52%, color-mix(in srgb,var(--ink) 72%, transparent) 100%); pointer-events:none}
-.portrait .tag{position:absolute; left:10px; right:10px; bottom:10px; display:flex; justify-content:space-between; gap:10px; z-index:2}
-.portrait .tag span{font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--fg); background:color-mix(in srgb,var(--ink) 70%, transparent); border:1px solid var(--rule); padding:4px 7px; border-radius:3px; backdrop-filter:blur(6px)}
-.corner{position:absolute; width:14px; height:14px; border:1px solid var(--signal); opacity:.8}
-.corner.tl{top:-1px;left:-1px;border-right:0;border-bottom:0}
-.corner.br{bottom:-1px;right:-1px;border-left:0;border-top:0}
-
-/* ---------- metrics ---------- */
-.metrics{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); border:1px solid var(--rule); border-radius:5px; overflow:hidden; background:var(--panel)}
-@media (max-width:760px){ .metrics{grid-template-columns:repeat(2,minmax(0,1fr))} }
-.metric{padding:clamp(18px,2.6vw,26px); border-right:1px solid var(--rule); min-width:0}
-.metric:last-child{border-right:0}
-@media (max-width:760px){
-  .metric:nth-child(2n){border-right:0}
-  .metric:nth-child(-n+2){border-bottom:1px solid var(--rule)}
+.role-headline em {
+  font-style: normal;
+  color: var(--signal);
+  font-weight: 700;
 }
-.metric .val{font-family:var(--display); font-weight:800; font-stretch:112%; font-size:clamp(32px,5vw,46px); line-height:1; letter-spacing:-.03em; font-variant-numeric:tabular-nums}
-.metric .val i{font-style:normal; color:var(--signal)}
-.metric .lbl{margin-top:10px; display:block}
 
-/* ---------- work ---------- */
-.work{display:grid; gap:14px}
-.card{
-  position:relative; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.25fr); gap:clamp(16px,3vw,40px);
-  background:var(--panel); border:1px solid var(--rule); border-radius:5px; padding:clamp(20px,3vw,30px);
-  transition:border-color .25s ease, transform .25s cubic-bezier(.2,.7,.3,1), background .25s ease;
+.hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 34px;
 }
-@media (max-width:820px){ .card{grid-template-columns:1fr; gap:14px} }
-.card:hover{border-color:color-mix(in srgb,var(--signal) 55%, var(--rule)); transform:translateY(-3px); background:var(--panel-2)}
-.card::before{content:""; position:absolute; left:-1px; top:14px; bottom:14px; width:2px; background:var(--signal); border-radius:2px; transform:scaleY(0); transform-origin:top; transition:transform .35s cubic-bezier(.2,.7,.3,1)}
-.card:hover::before{transform:scaleY(1)}
-.card .meta{display:flex; flex-direction:column; gap:10px; min-width:0}
-.card h3 a{text-decoration:none; background-image:linear-gradient(var(--signal),var(--signal)); background-size:0% 1px; background-repeat:no-repeat; background-position:0 100%; transition:background-size .3s ease}
-.card h3 a:hover{background-size:100% 1px; color:var(--signal)}
-.card .where{color:var(--muted); font-size:14.5px}
-.bullets{list-style:none; margin:0; padding:0; display:grid; gap:9px; min-width:0}
-.bullets li{position:relative; padding-left:19px; font-size:15px; color:var(--muted)}
-.bullets li::before{content:""; position:absolute; left:0; top:.66em; width:7px; height:1px; background:var(--signal)}
-.bullets li b{color:var(--fg); font-weight:600}
-.stack{display:flex; flex-wrap:wrap; gap:6px; margin-top:4px}
-.stack span{font-family:var(--mono); font-size:10.5px; letter-spacing:.07em; color:var(--muted); border:1px solid var(--rule); padding:4px 8px; border-radius:3px; background:var(--ink)}
-.card.studio{border-color:color-mix(in srgb,var(--pulse) 34%, var(--rule))}
-.card.studio::before{background:var(--pulse)}
-.card.studio:hover{border-color:color-mix(in srgb,var(--pulse) 62%, var(--rule))}
-.card.studio h3 a{background-image:linear-gradient(var(--pulse),var(--pulse))}
-.card.studio h3 a:hover{color:var(--pulse)}
-.card.studio .bullets li::before{background:var(--pulse)}
-.now{font-family:var(--mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--pulse); border:1px solid color-mix(in srgb,var(--pulse) 40%, var(--rule)); padding:3px 7px; border-radius:999px; align-self:flex-start}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: 13px 20px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--rule);
+  background: var(--panel);
+  color: var(--fg);
+  min-height: 46px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s var(--ease-out), border-color 0.2s ease, background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+.btn:hover {
+  transform: translateY(-2px);
+  border-color: var(--signal);
+  color: var(--signal);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+.btn.primary {
+  background: var(--signal);
+  border-color: var(--signal);
+  color: #061210;
+}
+.btn.primary:hover {
+  background: #62EBD7;
+  color: #040E0C;
+  border-color: #62EBD7;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+.btn svg {
+  width: 15px;
+  height: 15px;
+  flex: none;
+}
 
-/* ---------- timeline ---------- */
-.tl{display:grid; gap:0; border-top:1px solid var(--rule)}
-.job{display:grid; grid-template-columns:150px minmax(0,1fr); gap:clamp(16px,4vw,48px); padding-block:clamp(24px,3.4vw,38px); border-bottom:1px solid var(--rule); position:relative}
-@media (max-width:760px){ .job{grid-template-columns:1fr; gap:12px} }
-.job .when{display:flex; flex-direction:column; gap:6px}
-.job .when .yr{font-family:var(--mono); font-size:12.5px; color:var(--signal); letter-spacing:.04em}
-.job .when .dur{font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted)}
-.job .body{min-width:0}
-.job .co{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:6px}
-.job .co .org{font-family:var(--mono); font-size:12.5px; color:var(--pulse); letter-spacing:.05em}
-.job .proj{color:var(--muted); font-size:14.5px; margin:8px 0 14px}
+/* Portrait Card with Inset Frame */
+.portrait-card {
+  position: relative;
+  max-width: 340px;
+  width: 100%;
+  margin-inline: auto 0;
+}
+@media (max-width: 900px) {
+  .portrait-card {
+    margin-inline: 0;
+    max-width: 280px;
+  }
+}
+.portrait-inner {
+  position: relative;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--panel);
+  padding: 10px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+  transition: transform 0.3s var(--ease-out), border-color 0.3s ease;
+}
+.portrait-inner:hover {
+  border-color: var(--signal);
+}
+.portrait-img-box {
+  position: relative;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.portrait-img {
+  width: 100%;
+  aspect-ratio: 760 / 858;
+  object-fit: cover;
+  filter: contrast(1.05) saturate(0.95);
+  transition: filter 0.3s ease;
+}
+.portrait-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 55%, rgba(7, 11, 16, 0.88) 100%);
+  pointer-events: none;
+}
+.portrait-badge-bottom {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  z-index: 3;
+}
+.portrait-badge-bottom span {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  text-transform: uppercase;
+  color: var(--fg);
+  background: rgba(7, 11, 16, 0.85);
+  border: 1px solid var(--rule);
+  padding: 5px 9px;
+  border-radius: var(--radius-sm);
+  backdrop-filter: blur(8px);
+}
 
-/* ---------- expertise ---------- */
-.skills{display:grid; grid-template-columns:repeat(auto-fit,minmax(248px,1fr)); gap:1px; background:var(--rule); border:1px solid var(--rule); border-radius:5px; overflow:hidden}
-.skill{background:var(--ink); padding:clamp(18px,2.4vw,24px); min-width:0; transition:background .25s ease}
-.skill:hover{background:var(--panel)}
-.skill h4{font-size:14px; font-weight:700; font-stretch:100%; letter-spacing:0; margin-bottom:12px; display:flex; align-items:center; gap:9px}
-.skill h4::before{content:""; width:5px; height:5px; background:var(--signal); border-radius:1px; flex:none}
-.skill ul{list-style:none; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:6px}
-.skill li{font-family:var(--mono); font-size:11.5px; color:var(--muted); letter-spacing:.02em}
-.skill li::after{content:"·"; margin-left:6px; color:var(--rule)}
-.skill li:last-child::after{content:""}
+/* ==========================================================================
+   METRICS BANNER
+   ========================================================================== */
+.metrics-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--panel);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  padding: 4px;
+  gap: 4px;
+}
+@media (max-width: 768px) {
+  .metrics-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 440px) {
+  .metrics-strip { grid-template-columns: 1fr; }
+}
+.metric-box {
+  padding: clamp(22px, 3vw, 32px);
+  background: var(--panel);
+  border-radius: var(--radius-sm);
+  transition: background-color 0.2s ease;
+  position: relative;
+}
+.metric-box:hover {
+  background: var(--panel-2);
+}
+.metric-val {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: clamp(36px, 5.2vw, 52px);
+  line-height: 1;
+  letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums;
+  color: var(--fg-bright);
+}
+.metric-val em {
+  font-style: normal;
+  color: var(--signal);
+}
+.metric-lbl {
+  margin-top: 10px;
+  display: block;
+  font-family: var(--mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.metric-desc {
+  font-size: 13.5px;
+  color: var(--muted-dark);
+  margin-top: 6px;
+  line-height: 1.4;
+}
 
-/* ---------- about / contact ---------- */
-.two{display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr); gap:clamp(26px,5vw,64px)}
-@media (max-width:820px){ .two{grid-template-columns:1fr} }
-.facts{display:grid; gap:0; border-top:1px solid var(--rule)}
-.fact{display:grid; grid-template-columns:120px minmax(0,1fr); gap:16px; padding-block:13px; border-bottom:1px solid var(--rule); align-items:baseline; font-size:15px}
-.fact .k{font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted)}
-.strengths{display:grid; gap:10px; margin-top:22px; list-style:none; padding:0}
-.strengths li{display:flex; gap:11px; align-items:flex-start; font-size:15px; color:var(--muted)}
-.strengths li svg{width:15px; height:15px; color:var(--signal); flex:none; margin-top:4px}
+/* ==========================================================================
+   INTERACTIVE ARCHITECTURE & BLE LAB
+   ========================================================================== */
+.lab-card {
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-top: 24px;
+  box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.4);
+}
+.lab-header {
+  padding: 16px 24px;
+  background: var(--panel-2);
+  border-bottom: 1px solid var(--rule);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.lab-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg-bright);
+}
+.lab-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 12px;
+  background: var(--signal-subtle);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--signal);
+}
+.lab-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+@media (max-width: 860px) {
+  .lab-body { grid-template-columns: 1fr; }
+}
+.lab-control-panel {
+  padding: 30px;
+  border-right: 1px solid var(--rule);
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+@media (max-width: 860px) {
+  .lab-control-panel { border-right: 0; border-bottom: 1px solid var(--rule); }
+}
+.lab-telemetry-readout {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 10px;
+}
+.tele-box {
+  background: var(--ink);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+}
+.tele-lbl {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+.tele-val {
+  font-family: var(--mono);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--signal);
+  margin-top: 4px;
+}
+.lab-actions-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.lab-btn {
+  padding: 10px 16px;
+  font-family: var(--mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--rule);
+  background: var(--panel-2);
+  color: var(--fg);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.lab-btn:hover {
+  border-color: var(--signal);
+  color: var(--signal);
+  transform: translateY(-1px);
+}
+.lab-btn.active {
+  background: var(--signal);
+  color: #061210;
+  border-color: var(--signal);
+}
+.lab-code-viewer {
+  background: var(--ink);
+  padding: 30px;
+  overflow-x: auto;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.65;
+  color: #D1DDEB;
+  display: flex;
+  flex-direction: column;
+}
+.code-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 12px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--rule);
+  font-size: 12px;
+  color: var(--muted);
+}
+.code-copy-btn {
+  background: transparent;
+  border: 1px solid var(--rule);
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  padding: 4px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+.code-copy-btn:hover {
+  color: var(--signal);
+  border-color: var(--signal);
+}
+.kw { color: #FF7B72; font-weight: 600; }
+.tp { color: #79C0FF; }
+.fn { color: #D2A8FF; }
+.str { color: #A5D6FF; }
+.com { color: #7B8CA3; font-style: italic; }
 
-.contact-row{display:flex; flex-wrap:wrap; gap:10px; margin-top:26px}
-.copy{display:inline-flex; align-items:center; gap:9px; font-family:var(--mono); font-size:13px; border:1px solid var(--rule); background:var(--panel); color:var(--fg); padding:12px 15px; border-radius:4px; cursor:pointer; transition:border-color .2s ease, color .2s ease}
-.copy:hover{border-color:var(--signal); color:var(--signal)}
-.copy[data-done="1"]{border-color:var(--signal); color:var(--signal)}
+/* ==========================================================================
+   WORK & SPOTLIGHT CARDS
+   ========================================================================== */
+.work-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
+}
+.filter-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.filter-tab {
+  padding: 9px 15px;
+  font-family: var(--mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  font-weight: 500;
+  border: 1px solid var(--rule);
+  background: var(--panel);
+  color: var(--muted);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.filter-tab:hover {
+  color: var(--fg-bright);
+  border-color: var(--rule-light);
+}
+.filter-tab.active {
+  background: var(--signal-subtle);
+  border-color: var(--signal);
+  color: var(--signal);
+  font-weight: 600;
+}
 
-footer.foot{border-top:1px solid var(--rule); background:var(--panel)}
-footer.foot .wrap{padding-block:26px; display:flex; flex-wrap:wrap; gap:14px 24px; align-items:center; justify-content:space-between}
-footer.foot a{color:var(--muted); text-decoration:none; font-family:var(--mono); font-size:12px; letter-spacing:.06em}
-footer.foot a:hover{color:var(--signal)}
+.work-grid {
+  display: grid;
+  gap: 20px;
+}
+.spotlight-card {
+  position: relative;
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: clamp(26px, 3.5vw, 40px);
+  overflow: hidden;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.2);
+  transition: transform 0.25s var(--ease-out), border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+}
+.spotlight-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--rule-light);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+}
 
-/* ---------- motion ---------- */
-.js .rv{opacity:0; transform:translateY(16px)}
-.js .rv.in{opacity:1; transform:none; transition:opacity .6s ease, transform .7s cubic-bezier(.2,.7,.3,1)}
-.js .rv.in[style*="--d"]{transition-delay:var(--d)}
-.js h1 .ln > span{transform:translateY(102%); animation:rise .9s cubic-bezier(.16,.84,.32,1) forwards}
-.js h1 .ln:nth-child(2) > span{animation-delay:.09s}
-.js .hero .fade{opacity:0; animation:fade .8s ease forwards}
-.js .hero .fade.d1{animation-delay:.28s}
-.js .hero .fade.d2{animation-delay:.4s}
-.js .hero .fade.d3{animation-delay:.52s}
-.js .hero .fade.d4{animation-delay:.16s}
-@keyframes rise{to{transform:none}}
-@keyframes fade{to{opacity:1}}
-@media (prefers-reduced-motion: reduce){
-  *,*::before,*::after{animation-duration:.001ms!important; animation-iteration-count:1!important; transition-duration:.001ms!important}
-  .js .rv{opacity:1; transform:none}
-  .js h1 .ln > span{transform:none}
-  .js .hero .fade{opacity:1}
+.card-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1.4fr);
+  gap: clamp(22px, 3.5vw, 44px);
+  align-items: start;
+}
+@media (max-width: 860px) {
+  .card-grid { grid-template-columns: 1fr; gap: 20px; }
+}
+
+.card-header-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.card-header-meta h3 a {
+  color: var(--fg-bright);
+  transition: color 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.card-header-meta h3 a:hover {
+  color: var(--signal);
+}
+.card-header-meta .where {
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.45;
+}
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--pulse);
+  border: 1px solid var(--rule);
+  background: var(--pulse-subtle);
+  padding: 5px 11px;
+  border-radius: 999px;
+  align-self: flex-start;
+  font-weight: 600;
+}
+
+.bullets {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+.bullets li {
+  position: relative;
+  padding-left: 20px;
+  font-size: 15.5px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.bullets li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.68em;
+  width: 7px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--signal);
+}
+.bullets li b {
+  color: var(--fg-bright);
+  font-weight: 600;
+}
+
+.tech-stack-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+.tech-tag {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--fg);
+  border: 1px solid var(--rule);
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--ink);
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+.tech-tag:hover {
+  border-color: var(--signal);
+  color: var(--signal);
+}
+
+.spotlight-card.studio {
+  border-color: rgba(255, 163, 71, 0.4);
+}
+.spotlight-card.studio .bullets li::before {
+  background: var(--pulse);
+}
+
+/* ==========================================================================
+   EXPERIENCE TIMELINE
+   ========================================================================== */
+.timeline-stream {
+  display: grid;
+  gap: 0;
+  border-top: 1px solid var(--rule);
+  padding-top: 16px;
+}
+.timeline-entry {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  gap: clamp(20px, 4.5vw, 54px);
+  padding-block: clamp(28px, 4vw, 42px);
+  border-bottom: 1px solid var(--rule);
+  position: relative;
+  transition: background-color 0.2s ease;
+}
+@media (max-width: 768px) {
+  .timeline-entry { grid-template-columns: 1fr; gap: 14px; }
+}
+.timeline-entry:hover {
+  background: rgba(20, 30, 44, 0.25);
+}
+.time-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.time-col .period {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--signal);
+}
+.time-col .org-name {
+  font-family: var(--mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.timeline-body {
+  min-width: 0;
+}
+.timeline-title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.timeline-domain-tag {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--pulse);
+  background: var(--pulse-subtle);
+  border: 1px solid var(--rule);
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+}
+.timeline-subtitle {
+  color: var(--muted);
+  font-size: 15px;
+  margin-bottom: 16px;
+}
+
+/* ==========================================================================
+   EXPERTISE BENTO GRID
+   ========================================================================== */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+@media (max-width: 1024px) {
+  .bento-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .bento-grid { grid-template-columns: 1fr; }
+}
+.bento-card {
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+.bento-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--signal);
+  background: var(--panel-2);
+}
+.bento-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.bento-card h4 {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: var(--fg-bright);
+}
+.bento-tags {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.bento-tag {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+  background: var(--ink);
+  border: 1px solid var(--rule);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  transition: color 0.15s, border-color 0.15s;
+}
+.bento-tag:hover {
+  color: var(--signal);
+  border-color: var(--signal);
+}
+
+/* ==========================================================================
+   ABOUT & LEADERSHIP
+   ========================================================================== */
+.split-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.85fr);
+  gap: clamp(32px, 5vw, 68px);
+}
+@media (max-width: 860px) {
+  .split-layout { grid-template-columns: 1fr; }
+}
+.facts-table {
+  display: grid;
+  gap: 0;
+  background: var(--panel);
+  border-radius: var(--radius);
+  border: 1px solid var(--rule);
+  overflow: hidden;
+  padding: 4px;
+}
+.fact-row {
+  display: grid;
+  grid-template-columns: 130px minmax(0, 1fr);
+  gap: 16px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--rule);
+  align-items: baseline;
+  font-size: 15px;
+  transition: background-color 0.15s ease;
+}
+.fact-row:hover {
+  background: var(--panel-2);
+}
+.fact-row:last-child { border-bottom: 0; }
+.fact-row .fact-label {
+  font-family: var(--mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 600;
+}
+.strengths-grid {
+  display: grid;
+  gap: 14px;
+  margin-top: 26px;
+  list-style: none;
+  padding: 0;
+}
+.strengths-grid li {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  font-size: 15.5px;
+  color: var(--muted);
+}
+.strength-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--signal-subtle);
+  border: 1px solid var(--rule);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--signal);
+  flex: none;
+  margin-top: 2px;
+}
+.strength-icon svg { width: 12px; height: 12px; }
+
+/* ==========================================================================
+   CONTACT SECTION & TOAST FEEDBACK
+   ========================================================================== */
+.contact-interactive-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 30px;
+}
+.copy-action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.action-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid var(--rule);
+  background: var(--panel);
+  color: var(--fg);
+  padding: 13px 18px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  min-height: 48px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+.action-copy-btn:hover {
+  border-color: var(--signal);
+  color: var(--signal);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+.action-copy-btn.copied {
+  border-color: var(--signal);
+  background: var(--signal-subtle);
+  color: var(--signal);
+}
+.action-copy-btn svg { width: 16px; height: 16px; flex: none; }
+
+/* Toast alert notification */
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+.toast {
+  background: var(--panel);
+  border: 1px solid var(--signal);
+  color: var(--fg-bright);
+  padding: 12px 18px;
+  border-radius: var(--radius-sm);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transform: translateY(20px);
+  opacity: 0;
+  transition: transform 0.25s var(--ease-out), opacity 0.25s ease;
+  pointer-events: auto;
+}
+.toast.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* ==========================================================================
+   COMMAND PALETTE MODAL (Cmd + K)
+   ========================================================================== */
+.palette-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 8, 12, 0.78);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 990;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: clamp(60px, 15vh, 120px) 16px 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.palette-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+.palette-dialog {
+  width: 100%;
+  max-width: 580px;
+  background: var(--panel);
+  border: 1px solid var(--rule-light);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65);
+  overflow: hidden;
+  transform: scale(0.96) translateY(-10px);
+  transition: transform 0.2s var(--ease-out);
+}
+.palette-backdrop.open .palette-dialog {
+  transform: scale(1) translateY(0);
+}
+.palette-search-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--rule);
+}
+.palette-search-box svg { width: 18px; height: 18px; color: var(--muted); }
+.palette-input {
+  flex: 1;
+  background: transparent;
+  border: 0;
+  font-family: var(--body);
+  font-size: 16px;
+  color: var(--fg-bright);
+  outline: none;
+}
+.palette-list {
+  max-height: 340px;
+  overflow-y: auto;
+  padding: 10px;
+  list-style: none;
+  margin: 0;
+}
+.palette-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 14px;
+  border-radius: var(--radius-sm);
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--fg);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.palette-item:hover, .palette-item.active {
+  background: var(--panel-2);
+  color: var(--signal);
+}
+.palette-item-tag {
+  font-size: 11.5px;
+  color: var(--muted);
+}
+.palette-foot {
+  padding: 12px 18px;
+  background: var(--ink);
+  border-top: 1px solid var(--rule);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* ==========================================================================
+   FOOTER
+   ========================================================================== */
+footer.foot {
+  border-top: 1px solid var(--rule);
+  background: var(--panel);
+}
+footer.foot .wrap {
+  padding-block: 32px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 28px;
+  align-items: center;
+  justify-content: space-between;
+}
+footer.foot a {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  transition: color 0.2s ease;
+}
+footer.foot a:hover {
+  color: var(--signal);
+}
+
+/* ==========================================================================
+   REVEAL ANIMATIONS & ACCESSIBILITY
+   ========================================================================== */
+.rv {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.6s ease, transform 0.65s var(--ease-out);
+}
+.rv.in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Accessible Reduced Motion Implementation */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .rv {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  h1.hero-title span.title-line > span {
+    transform: none !important;
+    animation: none !important;
+  }
 }
 </style>
 </head>
 <body>
 
-<header class="bar">
+<a href="#main" class="skip-link">Skip to main content</a>
+
+<!-- Sticky Navigation Header -->
+<header class="bar" role="banner">
+  <div class="bar-progress" id="scroll-bar-progress" aria-hidden="true"></div>
   <div class="wrap">
-    <a class="sig" href="#top"><span class="blip" aria-hidden="true"></span>Prakash&nbsp;Eppala</a>
-    <nav class="links" aria-label="Sections">
-      <a href="#work">Work</a>
-      <a href="#experience">Experience</a>
-      <a href="#expertise">Expertise</a>
-      <a href="#about">About</a>
-      <a href="#contact">Contact</a>
-    </nav>
-    <div class="availability"><span class="chip">Open to iOS lead roles</span></div>
+    <div class="bar-left">
+      <a class="sig" href="#top" aria-label="Prakash Eppala, home">
+        <span class="sig-status">
+          <span class="sig-dot" aria-hidden="true"></span>
+          <span>LEAD ARCHITECT</span>
+        </span>
+        <span>Prakash Eppala</span>
+      </a>
+      <nav class="links" aria-label="Primary Navigation">
+        <a href="#work">Work</a>
+        <a href="#lab">BLE Lab</a>
+        <a href="#experience">Experience</a>
+        <a href="#expertise">Expertise</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </div>
+
+    <div class="bar-actions">
+      <button class="cmd-pill" id="open-palette-btn" type="button" aria-label="Open command palette (Press Cmd+K)">
+        <span>Commands</span>
+        <span class="cmd-key">⌘K</span>
+      </button>
+
+      <button class="icon-btn" id="theme-toggle" type="button" aria-label="Toggle visual theme (Dark / Light)" title="Toggle theme">
+        <svg id="theme-icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+        <svg id="theme-icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+      </button>
+
+      <button class="menu-toggle" id="mobile-menu-btn" type="button" aria-label="Open navigation menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px" aria-hidden="true">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+    </div>
   </div>
 </header>
 
-<section class="hero" id="top">
-  <canvas id="trace" aria-hidden="true"></canvas>
-  <div class="wrap">
-    <div class="hero-grid">
-      <div>
-        <div class="kicker fade d4">
-          <span class="mono">Hyderabad, India — remote / global</span>
-          <span class="mono" style="color:var(--signal)">11+ yrs native iOS</span>
+<!-- Mobile Navigation Drawer -->
+<div class="mobile-nav" id="mobile-drawer" role="dialog" aria-modal="true" aria-label="Mobile Navigation">
+  <a href="#work" class="mobile-link">Work</a>
+  <a href="#lab" class="mobile-link">BLE Simulator Lab</a>
+  <a href="#experience" class="mobile-link">Experience</a>
+  <a href="#expertise" class="mobile-link">Expertise</a>
+  <a href="#about" class="mobile-link">About</a>
+  <a href="#contact" class="mobile-link">Contact</a>
+  <div class="mobile-nav-foot">
+    <a class="btn primary" href="assets/Prakash-Eppala-Resume.pdf" target="_blank" rel="noopener">
+      Download Résumé (PDF)
+    </a>
+  </div>
+</div>
+
+<main id="main">
+
+  <!-- HERO SECTION -->
+  <section class="hero" id="top" aria-label="Introduction">
+    <canvas id="trace-canvas" aria-label="Interactive biomedical and BLE telemetry waveform. Move cursor or touch to interact."></canvas>
+
+    <div class="hero-telemetry-status" aria-hidden="true">
+      <span class="live-indicator">
+        <span class="sig-dot"></span>
+        <span>BLE 5.4 · 250 Hz STREAM</span>
+      </span>
+      <span class="extra-meta">RADIO: ACTIVE · CRC: VALID · PACKETS: <span id="tele-packet-counter" class="tnum">14,208</span></span>
+      <span>HYDERABAD · GLOBAL REMOTE</span>
+    </div>
+
+    <div class="wrap">
+      <div class="hero-grid">
+        <div>
+          <div class="hero-meta-kicker">
+            <span class="badge-pill accent">11+ YRS NATIVE IOS</span>
+            <span class="badge-pill">MOBILE ARCHITECT</span>
+            <span class="badge-pill">FOUNDER @ NAPTRIX LABS</span>
+          </div>
+
+          <h1 class="hero-title">
+            <span class="title-line"><span>Prakash</span></span>
+            <span class="title-line"><span>Eppala</span></span>
+          </h1>
+
+          <p class="role-headline">
+            iOS Technical Lead &amp; Mobile Architect specializing in <em>BLE connected healthcare platforms</em>, high-concurrency Swift frameworks, and production App Store systems.
+          </p>
+
+          <p class="lede">
+            I lead iOS engineering teams and design the foundations under them: clean module boundaries in Swift 6 and SwiftUI, fault-tolerant Bluetooth stacks that stay connected in clinical environments, 85%+ automated coverage, and automated release pipelines from TestFlight to zero-downtime hotfix.
+          </p>
+
+          <div class="hero-cta">
+            <a class="btn primary" href="#work">
+              <span>Explore Selected Work</span>
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+            </a>
+            <a class="btn" href="assets/Prakash-Eppala-Resume.pdf" target="_blank" rel="noopener">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M14 10v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-3M8 2v8M4 6l4 4 4-4"/></svg>
+              <span>Résumé (PDF)</span>
+            </a>
+            <a class="btn" href="https://github.com/prakash-eppala" target="_blank" rel="noopener">GitHub</a>
+            <a class="btn" href="https://www.linkedin.com/in/prakash-eppala" target="_blank" rel="noopener">LinkedIn</a>
+          </div>
         </div>
-        <h1>
-          <span class="ln"><span>Prakash</span></span>
-          <span class="ln"><span>Eppala</span></span>
-        </h1>
-        <p class="role fade d1">iOS Technical Lead &amp; Mobile Architect — <em>BLE-connected healthcare apps</em>, reusable Swift frameworks, shipped App Store products.</p>
-        <p class="lede fade d2">I lead small iOS teams and own the architecture under them: clean module boundaries in Swift and SwiftUI, Bluetooth stacks that stay connected in real clinical settings, 85%+ test coverage, and the full release pipeline from TestFlight to hotfix.</p>
-        <div class="cta fade d3">
-          <a class="btn primary" href="#work">See selected work
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
-          </a>
-          <a class="btn" href="https://www.linkedin.com/in/prakash-eppala" target="_blank" rel="noopener">LinkedIn</a>
-          <a class="btn" href="https://github.com/prakash-eppala" target="_blank" rel="noopener">GitHub</a>
-          <a class="btn" href="assets/Prakash-Eppala-Resume.pdf" target="_blank" rel="noopener">Résumé (PDF)</a>
+
+        <figure class="portrait-card" style="margin:0">
+          <div class="portrait-inner">
+            <div class="portrait-img-box">
+              <img class="portrait-img" src="assets/prakash-eppala.jpg" width="760" height="858" alt="Prakash Eppala, iOS Technical Lead" fetchpriority="high">
+              <div class="portrait-overlay" aria-hidden="true"></div>
+              <div class="portrait-badge-bottom">
+                <span>iOS Lead Architect</span>
+                <span>Est. 2014</span>
+              </div>
+            </div>
+          </div>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- METRICS STRIP -->
+  <section class="band" aria-label="Key Performance Indicators">
+    <div class="wrap">
+      <div class="metrics-strip rv">
+        <div class="metric-box">
+          <div class="metric-val"><span data-count="11">11</span><em>+</em></div>
+          <span class="metric-lbl">Years Native iOS</span>
+          <p class="metric-desc">Continuous evolution from Objective-C to Swift 6 Concurrency.</p>
+        </div>
+        <div class="metric-box">
+          <div class="metric-val"><span data-count="6">6</span></div>
+          <span class="metric-lbl">Engineers Led</span>
+          <p class="metric-desc">Mentored teams across IoT, aviation, and enterprise products.</p>
+        </div>
+        <div class="metric-box">
+          <div class="metric-val"><span data-count="85">85</span><em>%</em></div>
+          <span class="metric-lbl">Test Coverage</span>
+          <p class="metric-desc">Rigorous TDD with XCTest, XCUITest, and CI regression gates.</p>
+        </div>
+        <div class="metric-box">
+          <div class="metric-val"><span data-count="40">40</span><em>%</em></div>
+          <span class="metric-lbl">BLE Reliability Gain</span>
+          <p class="metric-desc">Cut medical sensor disconnects in real clinical settings.</p>
         </div>
       </div>
-      <figure class="portrait fade d4" style="margin:0">
-        <div class="frame">
-          <span class="corner tl" aria-hidden="true"></span>
-          <span class="corner br" aria-hidden="true"></span>
-          <img src="assets/prakash-eppala.jpg" width="760" height="858" alt="Prakash Eppala" fetchpriority="high">
-          <div class="tag"><span>iOS Technical Lead</span><span>Est. 2014</span></div>
-        </div>
-      </figure>
     </div>
-  </div>
-</section>
+  </section>
 
-<section class="band">
-  <div class="wrap">
-    <div class="metrics rv">
-      <div class="metric"><div class="val"><span data-count="11">11</span><i>+</i></div><span class="mono lbl">Years native iOS</span></div>
-      <div class="metric"><div class="val"><span data-count="6">6</span></div><span class="mono lbl">Engineers led</span></div>
-      <div class="metric"><div class="val"><span data-count="85">85</span><i>%</i></div><span class="mono lbl">Automated coverage</span></div>
-      <div class="metric"><div class="val"><span data-count="3">3</span></div><span class="mono lbl">Domains shipped</span></div>
+  <!-- INTERACTIVE BLE & SWIFT ARCHITECTURE LAB -->
+  <section class="band" id="lab" aria-label="Interactive BLE and Architecture Lab">
+    <div class="wrap">
+      <div class="shead rv">
+        <span class="idx mono">01 — Interactive Architecture Lab</span>
+        <span class="rule" aria-hidden="true"></span>
+        <span class="mono">Live Simulator</span>
+      </div>
+
+      <h2 style="max-width:22ch; margin-bottom:14px" class="rv">Continuous Glucose Telemetry &amp; Radio Engineering</h2>
+
+      <div class="lab-card rv">
+        <div class="lab-header">
+          <div class="lab-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;color:var(--signal)" aria-hidden="true">
+              <path d="M6.5 6.5l11 11L12 23V1l5.5 5.5-11 11"/>
+            </svg>
+            <span>CoreBluetooth &amp; Medical Telemetry State Machine</span>
+          </div>
+          <div class="lab-status-badge">
+            <span class="sig-dot"></span>
+            <span id="lab-state-text">STREAMING TELEMETRY (250 Hz)</span>
+          </div>
+        </div>
+
+        <div class="lab-body">
+          <div class="lab-control-panel">
+            <div>
+              <h3 style="font-size:24px; margin-bottom:8px">Test the Radio Architecture</h3>
+              <p class="lede" style="font-size:15px">
+                In continuous glucose monitoring (CGM), radio drop-outs directly affect patient safety. Test how the underlying Swift architecture handles discovery, state recovery, and packet serialization:
+              </p>
+            </div>
+
+            <div class="lab-telemetry-readout">
+              <div class="tele-box">
+                <div class="tele-lbl">Glucose Level</div>
+                <div class="tele-val" id="tele-glucose-val">108 <span style="font-size:12px;color:var(--muted)">mg/dL</span></div>
+              </div>
+              <div class="tele-box">
+                <div class="tele-lbl">Signal RSSI</div>
+                <div class="tele-val" id="tele-rssi-val">-54 <span style="font-size:12px;color:var(--muted)">dBm</span></div>
+              </div>
+              <div class="tele-box">
+                <div class="tele-lbl">Drop Rate</div>
+                <div class="tele-val" id="tele-drop-val">0.00%</div>
+              </div>
+            </div>
+
+            <div class="lab-actions-row">
+              <button class="lab-btn active" id="btn-lab-stream" type="button">Stream Nominal</button>
+              <button class="lab-btn" id="btn-lab-spike" type="button">Inject Spike Event</button>
+              <button class="lab-btn" id="btn-lab-drop" type="button">Simulate Radio Drop</button>
+              <button class="lab-btn" id="btn-lab-reconnect" type="button">Auto-Reconnect</button>
+            </div>
+          </div>
+
+          <div class="lab-code-viewer">
+            <div class="code-header">
+              <span>BluetoothTelemetryManager.swift</span>
+              <button class="code-copy-btn" id="copy-swift-code" type="button">Copy Swift</button>
+            </div>
+            <pre style="margin:0"><code><span class="kw">final class</span> <span class="tp">CGMTelemetryPipeline</span>: <span class="tp">Sendable</span> {
+    <span class="kw">private let</span> radioStream: <span class="tp">AsyncStream</span>&lt;<span class="tp">SensorPacket</span>&gt;
+    
+    <span class="kw">func</span> <span class="fn">observeReadings</span>() <span class="kw">async</span> {
+        <span class="kw">for await</span> packet <span class="kw">in</span> radioStream {
+            <span class="kw">guard</span> packet.isValidCRC <span class="kw">else</span> { <span class="kw">continue</span> }
+            <span class="kw">await</span> telemetryEngine.<span class="fn">process</span>(packet)
+            <span class="com">// Swift 6 Actor-isolated state update</span>
+        }
+    }
+}</code></pre>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<section class="band" id="work">
-  <div class="wrap">
-    <div class="shead rv">
-      <span class="mono idx">01 — Selected work</span>
-      <span class="rule" aria-hidden="true"></span>
+  <!-- SELECTED WORK -->
+  <section class="band" id="work" aria-label="Selected Production Systems">
+    <div class="wrap">
+      <div class="shead rv">
+        <span class="idx mono">02 — Selected Systems</span>
+        <span class="rule" aria-hidden="true"></span>
+        <span class="mono">Shipped &amp; Maintained</span>
+      </div>
+
+      <div class="work-controls rv">
+        <h2 style="max-width:20ch">Products I architected, shipped, and stand behind.</h2>
+        <div class="filter-tabs" role="tablist" aria-label="Project Categories">
+          <button class="filter-tab active" role="tab" aria-selected="true" data-filter="all">All Systems</button>
+          <button class="filter-tab" role="tab" aria-selected="false" data-filter="ble">HealthTech &amp; BLE</button>
+          <button class="filter-tab" role="tab" aria-selected="false" data-filter="oss">Open Source SDK</button>
+          <button class="filter-tab" role="tab" aria-selected="false" data-filter="store">App Store</button>
+        </div>
+      </div>
+
+      <div class="work-grid">
+
+        <!-- Naptrix Labs -->
+        <article class="spotlight-card studio rv" data-category="store ble oss">
+          <div class="card-grid">
+            <div class="card-header-meta">
+              <span class="status-pill">Active Venture · 2026</span>
+              <h3><a href="https://naptrixlabs.com" target="_blank" rel="noopener">Naptrix Labs <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" style="width:14px;height:14px" aria-hidden="true"><path d="M5 11L11 5M11 5H6M11 5V10"/></svg></a></h3>
+              <p class="where">Founder · Independent Mobile Product Studio · Hyderabad</p>
+              <div class="tech-stack-row">
+                <span class="tech-tag">iOS</span>
+                <span class="tech-tag">Swift 6</span>
+                <span class="tech-tag">Flutter</span>
+                <span class="tech-tag">CoreBluetooth</span>
+                <span class="tech-tag">Node.js</span>
+                <span class="tech-tag">PostgreSQL</span>
+              </div>
+            </div>
+            <div>
+              <ul class="bullets">
+                <li>Independent product studio where I design, architect, and ship production applications end to end from database schemas to App Store release.</li>
+                <li>Created and published <b>Vive Move</b> (App Store live) and <b>SecureVault</b> (Open Source on Swift Package Manager and CocoaPods).</li>
+                <li>Open to selective technical advisory: iOS architecture audits, medical device integration, and zero-defect release strategy.</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <!-- CGM Healthcare -->
+        <article class="spotlight-card rv" data-category="ble">
+          <div class="card-grid">
+            <div class="card-header-meta">
+              <span class="badge-pill accent">Clinical HealthTech</span>
+              <h3>Continuous Glucose Monitoring Platform</h3>
+              <p class="where">Innominds · iOS Technical Lead · 2025 – 2026</p>
+              <div class="tech-stack-row">
+                <span class="tech-tag">Swift</span>
+                <span class="tech-tag">SwiftUI</span>
+                <span class="tech-tag">CoreBluetooth</span>
+                <span class="tech-tag">Combine</span>
+                <span class="tech-tag">Firestore</span>
+                <span class="tech-tag">Datadog</span>
+              </div>
+            </div>
+            <div>
+              <ul class="bullets">
+                <li>Architected continuous glucose monitoring iOS system connecting to BLE sensors over CoreBluetooth with strict clinical reliability standards.</li>
+                <li>Rewrote the wireless communication pipeline, increasing connection retention by <b>40%</b> and eliminating sync dropouts in busy RF environments.</li>
+                <li>Engineered offline-first Firestore synchronization with multi-device conflict resolution and real-time LLM-driven clinical insights.</li>
+                <li>Led <b>6 iOS engineers</b>, establishing rigorous TDD and code review gates reaching <b>85%+ test coverage</b> in XCTest and XCUITest.</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <!-- SecureVault SDK -->
+        <article class="spotlight-card rv" data-category="oss">
+          <div class="card-grid">
+            <div class="card-header-meta">
+              <span class="badge-pill">Open Source SDK</span>
+              <h3><a href="https://github.com/prakash-eppala/SecureVault" target="_blank" rel="noopener">SecureVault SDK <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" style="width:14px;height:14px" aria-hidden="true"><path d="M5 11L11 5M11 5H6M11 5V10"/></svg></a></h3>
+              <p class="where">Author · Swift Package &amp; CocoaPod · Production Security</p>
+              <div class="tech-stack-row">
+                <span class="tech-tag">Swift 6</span>
+                <span class="tech-tag">CryptoKit</span>
+                <span class="tech-tag">Secure Enclave</span>
+                <span class="tech-tag">Keychain</span>
+                <span class="tech-tag">SQLite Cipher</span>
+              </div>
+            </div>
+            <div>
+              <ul class="bullets">
+                <li>Policy-driven mobile storage SDK: client applications declare sensitivity requirements, and SecureVault routes to the Keychain, encrypted SQLite, or Secure Enclave with automated fail-closed guarantees.</li>
+                <li>Hardware-bound keys utilizing Secure Enclave and biometric gating (TouchID / FaceID) with ECIES encryption on Apple CryptoKit.</li>
+                <li>Crash-safe automatic key rotation, seamless data migration, and cryptographic tamper detection on local stores.</li>
+                <li>Modern ergonomic API featuring <code>@SecureStorage</code> property wrappers and SwiftUI <code>BiometricGate</code> controls with zero third-party dependencies.</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <!-- Vive Move -->
+        <article class="spotlight-card rv" data-category="store">
+          <div class="card-grid">
+            <div class="card-header-meta">
+              <span class="badge-pill">App Store Live</span>
+              <h3><a href="https://apps.apple.com/in/app/vive-move/id6800129617" target="_blank" rel="noopener">Vive Move App <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" style="width:14px;height:14px" aria-hidden="true"><path d="M5 11L11 5M11 5H6M11 5V10"/></svg></a></h3>
+              <p class="where">Creator · Solo Built App Store Product · 2026</p>
+              <div class="tech-stack-row">
+                <span class="tech-tag">Flutter</span>
+                <span class="tech-tag">Riverpod</span>
+                <span class="tech-tag">HealthKit</span>
+                <span class="tech-tag">Node.js</span>
+                <span class="tech-tag">PostgreSQL</span>
+                <span class="tech-tag">React Admin</span>
+              </div>
+            </div>
+            <div>
+              <ul class="bullets">
+                <li>Privacy-conscious health and fitness companion with Apple Health and Health Connect telemetry, live GPS workout tracking, and interactive progress charts.</li>
+                <li>Curated 1,000+ item regional nutrition catalog with offline-capable search and sub-second nutrient aggregation.</li>
+                <li>Built a hardened Node.js authentication gateway with 15-minute rotating JWTs, replay detection, RBAC, and 36 automated Jest test suites.</li>
+                <li>Engineered React and TypeScript operations console for push alerts and analytics with automated CI/CD deployments to Railway.</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <!-- Private Aviation Platform -->
+        <article class="spotlight-card rv" data-category="all">
+          <div class="card-grid">
+            <div class="card-header-meta">
+              <span class="badge-pill">Aviation &amp; Logistics</span>
+              <h3>Private Aviation Booking Platform</h3>
+              <p class="where">UST · Senior iOS Engineer · 2023 – 2025</p>
+              <div class="tech-stack-row">
+                <span class="tech-tag">Swift</span>
+                <span class="tech-tag">Clean Architecture</span>
+                <span class="tech-tag">GraphQL</span>
+                <span class="tech-tag">Server-Driven UI</span>
+              </div>
+            </div>
+            <div>
+              <ul class="bullets">
+                <li>High-concurrency private flight reservation and fleet dispatch platform built with dynamic Server-Driven UI, updating application layouts without App Store rebuilds.</li>
+                <li>Migrated core REST APIs to GraphQL, eliminating over-fetching and decreasing mobile payload size by <b>30%</b>.</li>
+                <li>Structured reusable Clean Architecture modules that cut onboarding time for new engineers by half.</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+      </div>
     </div>
-    <h2 class="rv" style="margin-bottom:clamp(24px,3vw,36px); max-width:18ch">Products I architected, shipped and still answer for.</h2>
-    <div class="work">
+  </section>
 
-      <article class="card studio rv">
-        <div class="meta">
-          <span class="now">Now</span>
-          <h3><a href="https://naptrixlabs.com" target="_blank" rel="noopener">Naptrix Labs</a></h3>
-          <p class="where">Founder &middot; Independent mobile product studio &middot; 2026 &ndash; present</p>
-          <div class="stack"><span>iOS</span><span>Swift</span><span>Flutter</span><span>BLE</span><span>Node.js</span><span>Product delivery</span></div>
-        </div>
-        <ul class="bullets">
-          <li>Newly formed studio where I build and ship mobile products end to end &mdash; design, architecture, backend, release and everything after it.</li>
-          <li><b>Vive Move</b> and <b>SecureVault</b> started as personal projects and are its first two shipped products: one live on the App Store, one open source on SPM and CocoaPods.</li>
-          <li>Currently building its own product line, and <b>open to selected client work</b>: iOS architecture reviews, BLE and device integration, and full app delivery.</li>
-        </ul>
-      </article>
+  <!-- EXPERIENCE TIMELINE -->
+  <section class="band" id="experience" aria-label="Career Trajectory">
+    <div class="wrap">
+      <div class="shead rv">
+        <span class="idx mono">03 — Career Experience</span>
+        <span class="rule" aria-hidden="true"></span>
+        <span class="mono">2014 → Present</span>
+      </div>
 
-      <article class="card rv">
-        <div class="meta">
-          <h3>CGM Healthcare Platform</h3>
-          <p class="where">Innominds · iOS Technical Lead · 2025 – 2026</p>
-          <div class="stack"><span>Swift</span><span>SwiftUI</span><span>CoreBluetooth</span><span>Firestore</span><span>Combine</span><span>Datadog</span><span>ChatGPT API</span></div>
-        </div>
-        <ul class="bullets">
-          <li>Scalable continuous glucose monitoring app with BLE medical devices over CoreBluetooth, built on clean module boundaries and a single data flow.</li>
-          <li>A rewritten BLE communication layer improved connection reliability by <b>40%</b> and cut device-sync failures in real clinical environments.</li>
-          <li>Real-time Firestore sync for multi-device access with offline-first consistency, plus AI health insights and an LLM-powered in-app chatbot.</li>
-          <li>Led and mentored <b>6 iOS engineers</b>; instituted TDD and code review to <b>85%+</b> coverage in XCTest/XCUITest.</li>
-        </ul>
-      </article>
+      <div class="timeline-stream">
 
-      <article class="card rv">
-        <div class="meta">
-          <h3>Private Aviation Booking Platform</h3>
-          <p class="where">UST · Senior iOS Engineer · 2023 – 2025</p>
-          <div class="stack"><span>Swift</span><span>Clean Architecture</span><span>GraphQL</span><span>Server-Driven UI</span><span>XCTest</span></div>
-        </div>
-        <ul class="bullets">
-          <li>High-traffic booking and fleet-management app using server-driven UI, so screens change without shipping an App Store update.</li>
-          <li>GraphQL migration removed data over-fetching and cut response payload size by <b>30%</b>.</li>
-          <li>Reusable modular feature components on Clean Architecture, improving testability and new-engineer onboarding time.</li>
-        </ul>
-      </article>
+        <article class="timeline-entry rv">
+          <div class="time-col">
+            <span class="period tnum">Sep 2025 – Jun 2026</span>
+            <span class="org-name">Innominds</span>
+          </div>
+          <div class="timeline-body">
+            <div class="timeline-title-row">
+              <h3>iOS Technical Lead</h3>
+              <span class="timeline-domain-tag">Healthcare IoT &amp; BLE</span>
+            </div>
+            <p class="timeline-subtitle">Continuous Glucose Monitoring platform</p>
+            <ul class="bullets">
+              <li>Owned mobile architecture and App Store delivery for continuous glucose monitoring devices.</li>
+              <li>Eliminated memory leaks and background task halts via Xcode Instruments profiling, increasing crash-free sessions to 99.8%.</li>
+              <li>Orchestrated full release pipelines across TestFlight beta cohorts, phased rollout, and rapid hotfixes.</li>
+            </ul>
+          </div>
+        </article>
 
-      <article class="card rv">
-        <div class="meta">
-          <h3><a href="https://github.com/prakash-eppala/SecureVault" target="_blank" rel="noopener">SecureVault</a></h3>
-          <p class="where">Author · Swift Package &amp; CocoaPod · Open source</p>
-          <div class="stack"><span>Swift 6</span><span>CryptoKit</span><span>Secure Enclave</span><span>Keychain</span><span>SQLite</span><span>SPM</span></div>
-        </div>
-        <ul class="bullets">
-          <li>Policy-driven secure storage SDK: apps declare <b>how sensitive</b> data is, SecureVault decides where and how to store it — Keychain, encrypted files or encrypted SQLite — and <b>fails closed</b> when the policy can't be met.</li>
-          <li>Keys bound to the Secure Enclave and data-protection classes, with biometric gating and ECIES on CryptoKit.</li>
-          <li>Crash-safe key rotation, migration and recovery, with tamper detection on encrypted data and files.</li>
-          <li>One module for async/await, Objective-C and SwiftUI (<code>@SecureStorage</code>, <code>BiometricGate</code>), zero dependencies.</li>
-        </ul>
-      </article>
+        <article class="timeline-entry rv">
+          <div class="time-col">
+            <span class="period tnum">Oct 2023 – Sep 2025</span>
+            <span class="org-name">UST</span>
+          </div>
+          <div class="timeline-body">
+            <div class="timeline-title-row">
+              <h3>Specialist I — Software Engineering</h3>
+              <span class="timeline-domain-tag">Private Aviation</span>
+            </div>
+            <p class="timeline-subtitle">High-traffic fleet booking &amp; client platform</p>
+            <ul class="bullets">
+              <li>Designed iOS client infrastructure in Swift featuring dynamic server-driven UI schemas.</li>
+              <li>Collaborated across product, UI/UX, and cloud engineering teams in bi-weekly Agile releases with strict automated regression gates.</li>
+            </ul>
+          </div>
+        </article>
 
-      <article class="card rv">
-        <div class="meta">
-          <h3><a href="https://apps.apple.com/in/app/vive-move/id6800129617" target="_blank" rel="noopener">Vive Move</a></h3>
-          <p class="where">Creator · Solo-built, on the App Store · 2026 – present</p>
-          <div class="stack"><span>Flutter</span><span>Riverpod</span><span>HealthKit</span><span>Node.js</span><span>PostgreSQL</span><span>React</span><span>Railway</span></div>
-        </div>
-        <ul class="bullets">
-          <li>Privacy-first fitness and nutrition companion: goals, meal logging, weight, daily steps, GPS workouts and progress charts in one place.</li>
-          <li>Food logging over a <b>1,000-item Indian nutrition catalog</b>, with Apple Health / Health Connect sync and live GPS route tracking.</li>
-          <li>Node.js auth gateway issuing 15-minute JWTs with hashed, rotating refresh tokens and replay detection; RBAC, rate limiting, <b>36 Jest suites</b>.</li>
-          <li>React + TypeScript admin console for users, content, analytics and push; CI/CD to Railway.</li>
-        </ul>
-      </article>
+        <article class="timeline-entry rv">
+          <div class="time-col">
+            <span class="period tnum">Jan 2022 – Oct 2023</span>
+            <span class="org-name">Evoke Technologies</span>
+          </div>
+          <div class="timeline-body">
+            <div class="timeline-title-row">
+              <h3>Senior Technical Associate — iOS</h3>
+              <span class="timeline-domain-tag">Cross-Platform Modernization</span>
+            </div>
+            <p class="timeline-subtitle">Radwell UK mobile application modernization</p>
+            <ul class="bullets">
+              <li>Led 4 engineers in migrating core warehouse logistics Objective-C modules into modular Swift with protocol-oriented abstraction layers.</li>
+              <li>Delivered a cross-platform Flutter experience for UK industrial supply customers across iOS and Android with sub-second catalog search.</li>
+            </ul>
+          </div>
+        </article>
 
-      <article class="card rv">
-        <div class="meta">
-          <h3>Enterprise Warehouse &amp; Networking Apps</h3>
-          <p class="where">CommScope · iOS Developer · 2014 – 2021</p>
-          <div class="stack"><span>Objective-C</span><span>Swift</span><span>BLE scanners</span><span>Peer-to-peer</span><span>Firebase</span><span>APNs</span></div>
-        </div>
-        <ul class="bullets">
-          <li>Pick and Pack and Bill of Lading apps used by thousands of enterprise users across <b>7+ years</b> of continuous delivery.</li>
-          <li>Integrated Zebra and Socket Mobile BLE barcode scanners for inventory and warehouse operations.</li>
-          <li>Peer-to-peer communication between iPad and iPod touch for data exchange during Pick and Pack workflows, with reliable offline sync.</li>
-        </ul>
-      </article>
+        <article class="timeline-entry rv">
+          <div class="time-col">
+            <span class="period tnum">Aug 2014 – Dec 2021</span>
+            <span class="org-name">CommScope</span>
+          </div>
+          <div class="timeline-body">
+            <div class="timeline-title-row">
+              <h3>Mobile Application Developer — iOS</h3>
+              <span class="timeline-domain-tag">Enterprise Mobile</span>
+            </div>
+            <p class="timeline-subtitle">Industrial warehouse logistics &amp; BLE barcode scanning</p>
+            <ul class="bullets">
+              <li>Maintained Pick &amp; Pack logistics iOS applications serving thousands of enterprise warehouse workers over seven years.</li>
+              <li>Integrated Socket Mobile and Zebra Bluetooth hardware scanners, building peer-to-peer iPad sync with fault-tolerant offline caches.</li>
+            </ul>
+          </div>
+        </article>
 
+      </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<section class="band" id="experience">
-  <div class="wrap">
-    <div class="shead rv">
-      <span class="mono idx">02 — Experience</span>
-      <span class="rule" aria-hidden="true"></span>
-      <span class="mono">Aug 2014 → present</span>
-    </div>
-    <div class="tl">
+  <!-- EXPERTISE BENTO MATRIX -->
+  <section class="band" id="expertise" aria-label="Technical Expertise">
+    <div class="wrap">
+      <div class="shead rv">
+        <span class="idx mono">04 — Core Competencies</span>
+        <span class="rule" aria-hidden="true"></span>
+        <span class="mono">Technical Depth</span>
+      </div>
 
-      <article class="job rv">
-        <div class="when"><span class="yr tnum">Sep 2025 – Jun 2026</span><span class="dur">Innominds</span></div>
-        <div class="body">
-          <div class="co"><h3>iOS Technical Lead</h3><span class="org">Healthcare IoT / BLE</span></div>
-          <p class="proj">Continuous Glucose Monitoring platform</p>
-          <ul class="bullets">
-            <li>Owned architecture and delivery of a large-scale CGM iOS app; defined module boundaries and data flow.</li>
-            <li>Profiled and fixed performance bottlenecks with Instruments and memory-leak audits; raised crash-free rate with Crashlytics and Datadog.</li>
-            <li>Owned the full App Store pipeline: versioning, TestFlight beta, production release and hotfix strategy.</li>
+      <div class="bento-grid rv">
+
+        <div class="bento-card">
+          <div class="bento-header">
+            <h4>iOS &amp; Swift Mastery</h4>
+          </div>
+          <ul class="bento-tags">
+            <li class="bento-tag">Swift 6</li>
+            <li class="bento-tag">SwiftUI</li>
+            <li class="bento-tag">UIKit</li>
+            <li class="bento-tag">Swift Concurrency</li>
+            <li class="bento-tag">Combine</li>
+            <li class="bento-tag">Objective-C</li>
+            <li class="bento-tag">Instruments</li>
+            <li class="bento-tag">Memory Audits</li>
           </ul>
         </div>
-      </article>
 
-      <article class="job rv">
-        <div class="when"><span class="yr tnum">Oct 2023 – Sep 2025</span><span class="dur">UST</span></div>
-        <div class="body">
-          <div class="co"><h3>Specialist I — Software Engineering</h3><span class="org">Private Aviation</span></div>
-          <p class="proj">Booking &amp; fleet management platform</p>
-          <ul class="bullets">
-            <li>Built the iOS platform in Swift with server-driven UI for dynamic screen composition.</li>
-            <li>Delivered features end to end with product, design and backend in Agile/Scrum, writing clean and testable code.</li>
+        <div class="bento-card">
+          <div class="bento-header">
+            <h4>Hardware &amp; BLE</h4>
+          </div>
+          <ul class="bento-tags">
+            <li class="bento-tag">CoreBluetooth</li>
+            <li class="bento-tag">BLE 5.4</li>
+            <li class="bento-tag">Medical IoT</li>
+            <li class="bento-tag">HealthKit</li>
+            <li class="bento-tag">State Recovery</li>
+            <li class="bento-tag">Barcode Scanners</li>
+            <li class="bento-tag">Background Sync</li>
           </ul>
         </div>
-      </article>
 
-      <article class="job rv">
-        <div class="when"><span class="yr tnum">Jan 2022 – Oct 2023</span><span class="dur">Evoke Technologies</span></div>
-        <div class="body">
-          <div class="co"><h3>Senior Technical Associate — iOS</h3><span class="org">Cross-platform</span></div>
-          <p class="proj">Radwell UK mobile app · legacy modernisation</p>
-          <ul class="bullets">
-            <li>Led a team of 4 iOS developers, delivering critical features on schedule through pair programming and iterative design.</li>
-            <li>Refactored a legacy Objective-C codebase to Swift with protocol-based abstractions and modular design.</li>
-            <li>Shipped a Flutter app for Radwell UK across Android and iOS, with REST integration and responsive UI.</li>
-            <li>Established code review, coding standards and architecture guidelines that cut review cycle times.</li>
+        <div class="bento-card">
+          <div class="bento-header">
+            <h4>Architecture &amp; Quality</h4>
+          </div>
+          <ul class="bento-tags">
+            <li class="bento-tag">Clean Architecture</li>
+            <li class="bento-tag">Modular Frameworks</li>
+            <li class="bento-tag">MVVM &amp; VIPER</li>
+            <li class="bento-tag">TDD (85%+ Coverage)</li>
+            <li class="bento-tag">XCTest</li>
+            <li class="bento-tag">XCUITest</li>
+            <li class="bento-tag">SPM &amp; CocoaPods</li>
           </ul>
         </div>
-      </article>
 
-      <article class="job rv">
-        <div class="when"><span class="yr tnum">Aug 2014 – Dec 2021</span><span class="dur">CommScope</span></div>
-        <div class="body">
-          <div class="co"><h3>Mobile Application Developer — iOS</h3><span class="org">Enterprise</span></div>
-          <p class="proj">Warehouse &amp; logistics apps at enterprise scale</p>
-          <ul class="bullets">
-            <li>Built and maintained native iOS apps in Swift and Objective-C for thousands of users over seven years.</li>
-            <li>Integrated REST APIs with Codable parsing, validation and layered error handling, reducing network-related crashes.</li>
-            <li>Added Firebase Analytics and Crashlytics dashboards that cut issue-resolution time; built XCTest/XCUITest suites to reduce regression risk.</li>
+        <div class="bento-card">
+          <div class="bento-header">
+            <h4>Security &amp; Cloud</h4>
+          </div>
+          <ul class="bento-tags">
+            <li class="bento-tag">CryptoKit</li>
+            <li class="bento-tag">Secure Enclave</li>
+            <li class="bento-tag">Keychain Services</li>
+            <li class="bento-tag">Firestore</li>
+            <li class="bento-tag">GraphQL</li>
+            <li class="bento-tag">Fastlane</li>
+            <li class="bento-tag">Datadog</li>
           </ul>
         </div>
-      </article>
 
-    </div>
-  </div>
-</section>
-
-<section class="band" id="expertise">
-  <div class="wrap">
-    <div class="shead rv">
-      <span class="mono idx">03 — Expertise</span>
-      <span class="rule" aria-hidden="true"></span>
-    </div>
-    <div class="skills rv">
-      <div class="skill"><h4>Languages &amp; UI</h4><ul><li>Swift</li><li>Objective-C</li><li>SwiftUI</li><li>UIKit</li><li>iOS SDK</li><li>Combine</li><li>Async/Await</li><li>Swift Concurrency</li><li>Xcode</li></ul></div>
-      <div class="skill"><h4>Architecture</h4><ul><li>MVVM</li><li>VIPER</li><li>Clean Architecture</li><li>Modular Architecture</li><li>POP</li><li>Dependency Injection</li><li>Coordinator</li><li>MVC</li></ul></div>
-      <div class="skill"><h4>APIs &amp; Connectivity</h4><ul><li>REST</li><li>GraphQL</li><li>WebSockets</li><li>BLE</li><li>CoreBluetooth</li><li>MQTT</li><li>APNs</li></ul></div>
-      <div class="skill"><h4>Performance &amp; Security</h4><ul><li>ARC</li><li>Instruments profiling</li><li>Memory management</li><li>App security</li><li>Keychain Services</li></ul></div>
-      <div class="skill"><h4>Data &amp; Persistence</h4><ul><li>Core Data</li><li>SQLite</li><li>Codable</li><li>HealthKit</li><li>UserDefaults</li></ul></div>
-      <div class="skill"><h4>Cloud, AI &amp; Monitoring</h4><ul><li>Firebase Firestore</li><li>Analytics</li><li>Crashlytics</li><li>Remote Config</li><li>Datadog</li><li>LLM integration</li><li>ChatGPT API</li><li>CoreML</li></ul></div>
-      <div class="skill"><h4>Testing &amp; DevOps</h4><ul><li>TDD</li><li>XCTest</li><li>XCUITest</li><li>85%+ coverage</li><li>SPM</li><li>CocoaPods</li><li>Fastlane</li><li>TestFlight</li><li>CI/CD</li></ul></div>
-      <div class="skill"><h4>Process &amp; Domains</h4><ul><li>Agile</li><li>Scrum</li><li>Code review</li><li>Healthcare IoT</li><li>Private aviation</li><li>Enterprise mobile</li></ul></div>
-    </div>
-  </div>
-</section>
-
-<section class="band" id="about">
-  <div class="wrap">
-    <div class="shead rv">
-      <span class="mono idx">04 — About</span>
-      <span class="rule" aria-hidden="true"></span>
-    </div>
-    <div class="two">
-      <div class="rv">
-        <h2 style="max-width:16ch; margin-bottom:20px">Eleven years in one discipline, done properly.</h2>
-        <p class="lede">I started on Objective-C warehouse apps at CommScope in 2014 and have stayed close to the device ever since — barcode scanners, then glucose sensors. The work I'm best at sits where Bluetooth meets architecture: keeping a radio link honest while the codebase above it stays modular, tested and easy for the next engineer to pick up.</p>
-        <p class="lede" style="margin-top:16px">Alongside leading teams, I build and publish my own. SecureVault, an open-source iOS security SDK, and Vive Move, a Flutter fitness app on the App Store with its own Node.js backend and React admin console, both began as personal projects and now sit under <a href="https://naptrixlabs.com" target="_blank" rel="noopener" style="color:var(--pulse); text-decoration:none">Naptrix Labs</a>, the studio I founded in 2026 to keep shipping them properly.</p>
-        <ul class="strengths">
-          <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5"/></svg>Team leadership and mentoring, 4–6 engineers</li>
-          <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5"/></svg>Architecture ownership and technical reviews</li>
-          <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5"/></svg>Full App Store release management</li>
-          <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5"/></svg>Reusable framework and SPM package design</li>
-        </ul>
       </div>
-      <div class="rv" style="--d:.08s">
-        <div class="facts">
-          <div class="fact"><span class="k">Education</span><span>B.Tech, Computer Science &amp; Engineering — CVR College of Engineering, Hyderabad, 2014</span></div>
-          <div class="fact"><span class="k">Based in</span><span>Hyderabad, India</span></div>
-          <div class="fact"><span class="k">Authorisation</span><span>India — open to remote and global opportunities</span></div>
-          <div class="fact"><span class="k">Open to</span><span>iOS Technical Lead · Senior iOS Engineer · Staff iOS Engineer · Mobile Architect</span></div>
-          <div class="fact"><span class="k">Studio</span><span>Naptrix Labs — client work in iOS architecture, BLE integration and app delivery</span></div>
-          <div class="fact"><span class="k">Domains</span><span>Healthcare IoT &amp; BLE · Private aviation · Enterprise mobile</span></div>
+    </div>
+  </section>
+
+  <!-- ABOUT & CREDENTIALS -->
+  <section class="band" id="about" aria-label="About Prakash">
+    <div class="wrap">
+      <div class="shead rv">
+        <span class="idx mono">05 — Background</span>
+        <span class="rule" aria-hidden="true"></span>
+        <span class="mono">Leadership</span>
+      </div>
+
+      <div class="split-layout">
+        <div class="rv">
+          <h2 style="max-width:18ch; margin-bottom:22px">Eleven years committed to engineering discipline.</h2>
+          <p class="lede">
+            I began building enterprise logistics iOS apps on Objective-C in 2014 and have stayed close to the hardware layer ever since from industrial laser barcode readers to subcutaneous continuous glucose monitors.
+          </p>
+          <p class="lede" style="margin-top:16px">
+            The work I excel at sits directly at the intersection of wireless hardware and software architecture: keeping radio links resilient while building clean, modular Swift codebases that scale effortlessly. Through Naptrix Labs, I continuously push modern mobile craft into live software.
+          </p>
+
+          <ul class="strengths-grid">
+            <li>
+              <span class="strength-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5"/></svg></span>
+              <span>Engineering mentorship and team leadership across 4 to 6 engineers.</span>
+            </li>
+            <li>
+              <span class="strength-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5"/></svg></span>
+              <span>End-to-end mobile architecture reviews, modular decoupling, and security audits.</span>
+            </li>
+            <li>
+              <span class="strength-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5"/></svg></span>
+              <span>Full lifecycle App Store governance, automated TestFlight pipelines, and zero-downtime releases.</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="rv">
+          <div class="facts-table">
+            <div class="fact-row">
+              <span class="fact-label">Education</span>
+              <span>B.Tech in Computer Science &amp; Engineering — CVR College of Engineering (2014)</span>
+            </div>
+            <div class="fact-row">
+              <span class="fact-label">Location</span>
+              <span>Hyderabad, India (Available for Global &amp; Remote roles)</span>
+            </div>
+            <div class="fact-row">
+              <span class="fact-label">Focus Roles</span>
+              <span>iOS Technical Lead · Mobile Architect · Staff iOS Engineer</span>
+            </div>
+            <div class="fact-row">
+              <span class="fact-label">Domains</span>
+              <span>Healthcare IoT &amp; BLE · Private Aviation · Mobile Security SDKs</span>
+            </div>
+            <div class="fact-row">
+              <span class="fact-label">Venture</span>
+              <span>Founder, Naptrix Labs</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<section class="band" id="contact">
-  <div class="wrap">
-    <div class="shead rv">
-      <span class="mono idx">05 — Contact</span>
-      <span class="rule" aria-hidden="true"></span>
-    </div>
-    <div class="two">
-      <div class="rv">
-        <h2 style="max-width:15ch">Hiring for an iOS team? Let's talk.</h2>
-        <p class="lede" style="margin-top:18px">The fastest route is email. I reply to anything specific about the role, the product and the team shape.</p>
-        <div class="contact-row">
-          <button class="copy" type="button" id="copy-email" data-copy="prakash.eppala@gmail.com">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="width:14px;height:14px" aria-hidden="true"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5"/><path d="M10.5 3.5H3a.5.5 0 0 0-.5.5v7.5"/></svg>
-            <span>prakash.eppala@gmail.com</span>
-          </button>
-          <button class="copy" type="button" id="copy-phone" data-copy="+91 81432 05930">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="width:14px;height:14px" aria-hidden="true"><rect x="4.5" y="1.5" width="7" height="13" rx="1.6"/><path d="M7 12.5h2"/></svg>
-            <span class="tnum">+91 81432 05930</span>
-          </button>
+  <!-- CONTACT SECTION -->
+  <section class="band" id="contact" aria-label="Contact and Inquiries">
+    <div class="wrap">
+      <div class="shead rv">
+        <span class="idx mono">06 — Connect</span>
+        <span class="rule" aria-hidden="true"></span>
+        <span class="mono">Open to Opportunities</span>
+      </div>
+
+      <div class="split-layout">
+        <div class="rv">
+          <h2 style="max-width:16ch">Building or leading an iOS team? Let's connect.</h2>
+          <p class="lede" style="margin-top:18px">
+            The quickest way to reach me is directly via email. I respond promptly to specific inquiries regarding technical leadership, team shape, and architectural challenges.
+          </p>
+
+          <div class="contact-interactive-panel">
+            <div class="copy-action-row">
+              <button class="action-copy-btn" id="btn-copy-email" type="button" data-copy="prakash.eppala@gmail.com" aria-label="Copy email address">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                <span>prakash.eppala@gmail.com</span>
+              </button>
+
+              <button class="action-copy-btn" id="btn-copy-phone" type="button" data-copy="+91 81432 05930" aria-label="Copy phone number">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                <span class="tnum">+91 81432 05930</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="rv">
+          <div class="facts-table">
+            <div class="fact-row">
+              <span class="fact-label">LinkedIn</span>
+              <span><a href="https://www.linkedin.com/in/prakash-eppala" target="_blank" rel="noopener" style="color:var(--signal)">linkedin.com/in/prakash-eppala</a></span>
+            </div>
+            <div class="fact-row">
+              <span class="fact-label">GitHub</span>
+              <span><a href="https://github.com/prakash-eppala" target="_blank" rel="noopener" style="color:var(--signal)">github.com/prakash-eppala</a></span>
+            </div>
+            <div class="fact-row">
+              <span class="fact-label">App Store</span>
+              <span><a href="https://apps.apple.com/in/app/vive-move/id6800129617" target="_blank" rel="noopener" style="color:var(--signal)">Vive Move</a></span>
+            </div>
+            <div class="fact-row">
+              <span class="fact-label">Official Studio</span>
+              <span><a href="https://naptrixlabs.com" target="_blank" rel="noopener" style="color:var(--pulse)">naptrixlabs.com</a></span>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="rv" style="--d:.08s">
-        <div class="facts">
-          <div class="fact"><span class="k">LinkedIn</span><span><a href="https://www.linkedin.com/in/prakash-eppala" target="_blank" rel="noopener" style="color:var(--signal); text-decoration:none">linkedin.com/in/prakash-eppala</a></span></div>
-          <div class="fact"><span class="k">GitHub</span><span><a href="https://github.com/prakash-eppala" target="_blank" rel="noopener" style="color:var(--signal); text-decoration:none">github.com/prakash-eppala</a></span></div>
-          <div class="fact"><span class="k">App Store</span><span><a href="https://apps.apple.com/in/app/vive-move/id6800129617" target="_blank" rel="noopener" style="color:var(--signal); text-decoration:none">Vive Move</a></span></div>
-          <div class="fact"><span class="k">Résumé</span><span><a href="assets/Prakash-Eppala-Resume.pdf" target="_blank" rel="noopener" style="color:var(--signal); text-decoration:none">Prakash-Eppala-Resume.pdf</a></span></div>
-        </div>
-      </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<footer class="foot">
+</main>
+
+<!-- FOOTER -->
+<footer class="foot" role="contentinfo">
   <div class="wrap">
-    <span class="mono">© <span id="yr">2026</span> Prakash Eppala — built at <a href="https://naptrixlabs.com" target="_blank" rel="noopener" style="color:var(--pulse); text-decoration:none">Naptrix Labs</a></span>
+    <span class="mono">
+      &copy; <span id="current-year">2026</span> Prakash Eppala — Architected at <a href="https://naptrixlabs.com" target="_blank" rel="noopener" style="color:var(--pulse)">Naptrix Labs</a>
+    </span>
     <span style="display:flex; gap:20px; flex-wrap:wrap">
       <a href="https://www.linkedin.com/in/prakash-eppala" target="_blank" rel="noopener">LinkedIn</a>
       <a href="https://github.com/prakash-eppala" target="_blank" rel="noopener">GitHub</a>
       <a href="https://naptrixlabs.com" target="_blank" rel="noopener">Naptrix Labs</a>
-      <a href="#top">Back to top</a>
+      <a href="#top">Back to top ↑</a>
     </span>
   </div>
 </footer>
 
+<!-- Toast Alert Pill -->
+<div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+<!-- Command Palette Modal -->
+<div class="palette-backdrop" id="palette-modal" role="dialog" aria-modal="true" aria-label="Quick Command Palette">
+  <div class="palette-dialog">
+    <div class="palette-search-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" class="palette-input" id="palette-input" placeholder="Type a command or jump to section..." aria-label="Search actions">
+      <span class="cmd-key">ESC</span>
+    </div>
+    <ul class="palette-list" id="palette-options" role="listbox">
+      <li class="palette-item active" role="option" data-action="work"><span>Jump to Selected Work</span><span class="palette-item-tag">Section</span></li>
+      <li class="palette-item" role="option" data-action="lab"><span>Jump to BLE Simulator Lab</span><span class="palette-item-tag">Interactive</span></li>
+      <li class="palette-item" role="option" data-action="experience"><span>Jump to Career Experience</span><span class="palette-item-tag">Section</span></li>
+      <li class="palette-item" role="option" data-action="expertise"><span>Jump to Expertise Bento Matrix</span><span class="palette-item-tag">Section</span></li>
+      <li class="palette-item" role="option" data-action="resume"><span>Download Résumé (PDF)</span><span class="palette-item-tag">File</span></li>
+      <li class="palette-item" role="option" data-action="copy-email"><span>Copy Email Address</span><span class="palette-item-tag">Action</span></li>
+      <li class="palette-item" role="option" data-action="theme"><span>Toggle Dark / Light Theme</span><span class="palette-item-tag">Preference</span></li>
+    </ul>
+    <div class="palette-foot">
+      <span>Use ↑ / ↓ to navigate</span>
+      <span>Press Enter to select</span>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================================================
+   INTERACTIVE SCRIPT ENGINE
+   ========================================================================== */
+-->
 <script>
-(function(){
+(function() {
+  'use strict';
   var root = document.documentElement;
-  root.classList.add('js');
-  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var y = document.getElementById('yr'); if (y) y.textContent = new Date().getFullYear();
+  var isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ---- scroll reveal ---- */
-  var rv = document.querySelectorAll('.rv');
-  if ('IntersectionObserver' in window && !reduce) {
-    var io = new IntersectionObserver(function(entries){
-      entries.forEach(function(e){
-        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+  // Set current year
+  var yrEl = document.getElementById('current-year');
+  if (yrEl) yrEl.textContent = new Date().getFullYear();
+
+  // 1. Toast Notification System
+  var toastContainer = document.getElementById('toast-container');
+  function showToast(message) {
+    if (!toastContainer) return;
+    var toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;color:var(--signal)"><path d="M3 8.5l3.2 3.2L13 5"/></svg><span>' + message + '</span>';
+    toastContainer.appendChild(toast);
+    requestAnimationFrame(function() {
+      toast.classList.add('show');
+    });
+    setTimeout(function() {
+      toast.classList.remove('show');
+      setTimeout(function() { toast.remove(); }, 300);
+    }, 2800);
+  }
+
+  // 2. Clipboard Copy Actions
+  function setupCopyButton(btnId) {
+    var btn = document.getElementById(btnId);
+    if (!btn) return;
+    btn.addEventListener('click', function() {
+      var textToCopy = btn.getAttribute('data-copy');
+      if (!textToCopy) return;
+      navigator.clipboard.writeText(textToCopy).then(function() {
+        btn.classList.add('copied');
+        showToast('Copied ' + textToCopy + ' to clipboard');
+        setTimeout(function() { btn.classList.remove('copied'); }, 2000);
+      }).catch(function() {
+        showToast('Unable to copy automatically');
       });
-    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
-    rv.forEach(function(el){ io.observe(el); });
+    });
+  }
+  setupCopyButton('btn-copy-email');
+  setupCopyButton('btn-copy-phone');
+
+  // Copy Swift code snippet
+  var copySwiftBtn = document.getElementById('copy-swift-code');
+  if (copySwiftBtn) {
+    copySwiftBtn.addEventListener('click', function() {
+      var code = `final class CGMTelemetryPipeline: Sendable {
+    private let radioStream: AsyncStream<SensorPacket>
+    
+    func observeReadings() async {
+        for await packet in radioStream {
+            guard packet.isValidCRC else { continue }
+            await telemetryEngine.process(packet)
+        }
+    }
+}`;
+      navigator.clipboard.writeText(code).then(function() {
+        copySwiftBtn.textContent = 'Copied!';
+        showToast('Swift code snippet copied');
+        setTimeout(function() { copySwiftBtn.textContent = 'Copy Swift'; }, 2000);
+      });
+    });
+  }
+
+  // 3. Theme Toggle Engine
+  var themeToggleBtn = document.getElementById('theme-toggle');
+  var darkIcon = document.getElementById('theme-icon-dark');
+  var lightIcon = document.getElementById('theme-icon-light');
+
+  function applyTheme(theme) {
+    root.setAttribute('data-theme', theme);
+    try { localStorage.setItem('theme', theme); } catch(e) {}
+    if (theme === 'light') {
+      darkIcon.style.display = 'none';
+      lightIcon.style.display = 'block';
+    } else {
+      darkIcon.style.display = 'block';
+      lightIcon.style.display = 'none';
+    }
+  }
+
+  // Check saved theme or system preference
+  var savedTheme = null;
+  try { savedTheme = localStorage.getItem('theme'); } catch(e) {}
+  if (savedTheme) {
+    applyTheme(savedTheme);
+  } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+    applyTheme('light');
   } else {
-    rv.forEach(function(el){ el.classList.add('in'); });
+    applyTheme('dark');
   }
 
-  /* ---- count-up metrics ---- */
-  var counted = false;
-  function countUp(){
-    if (counted || reduce) return; counted = true;
-    document.querySelectorAll('[data-count]').forEach(function(el){
-      var end = parseInt(el.getAttribute('data-count'), 10), t0 = null, dur = 900;
-      function step(ts){
-        if (!t0) t0 = ts;
-        var p = Math.min(1, (ts - t0) / dur);
-        el.textContent = Math.round(end * (1 - Math.pow(1 - p, 3)));
-        if (p < 1) requestAnimationFrame(step);
-      }
-      requestAnimationFrame(step);
+  if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', function() {
+      var current = root.getAttribute('data-theme') || 'dark';
+      var next = current === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+      showToast('Switched to ' + next + ' mode');
     });
-  }
-  var mroot = document.querySelector('.metrics');
-  if (mroot && 'IntersectionObserver' in window) {
-    new IntersectionObserver(function(es, ob){
-      if (es[0].isIntersecting) { countUp(); ob.disconnect(); }
-    }, { threshold: 0.4 }).observe(mroot);
   }
 
-  /* ---- scrollspy ---- */
-  var navLinks = Array.prototype.slice.call(document.querySelectorAll('nav.links a'));
-  var sections = navLinks.map(function(a){ return document.querySelector(a.getAttribute('href')); });
-  function spy(){
-    var pos = window.scrollY + window.innerHeight * 0.32, cur = -1;
-    sections.forEach(function(s, i){ if (s && s.offsetTop <= pos) cur = i; });
-    navLinks.forEach(function(a, i){
-      if (i === cur) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
-    });
-  }
-  var ticking = false;
-  window.addEventListener('scroll', function(){
-    if (!ticking) { ticking = true; requestAnimationFrame(function(){ spy(); ticking = false; }); }
+  // 4. Scroll Progress Bar
+  var scrollBarProgress = document.getElementById('scroll-bar-progress');
+  window.addEventListener('scroll', function() {
+    var totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+    if (totalHeight > 0 && scrollBarProgress) {
+      var progress = (window.scrollY / totalHeight) * 100;
+      scrollBarProgress.style.width = Math.min(100, Math.max(0, progress)) + '%';
+    }
   }, { passive: true });
-  spy();
 
-  /* ---- copy buttons ---- */
-  document.querySelectorAll('.copy').forEach(function(btn){
-    var label = btn.querySelector('span'), original = label.textContent;
-    btn.addEventListener('click', function(){
-      var text = btn.getAttribute('data-copy');
-      function done(){
-        btn.setAttribute('data-done', '1'); label.textContent = 'Copied';
-        setTimeout(function(){ label.textContent = original; btn.removeAttribute('data-done'); }, 1600);
+  // 5. Scroll Reveal IntersectionObserver
+  var revealElements = document.querySelectorAll('.rv');
+  if ('IntersectionObserver' in window && !isReducedMotion) {
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+    revealElements.forEach(function(el) { observer.observe(el); });
+  } else {
+    revealElements.forEach(function(el) { el.classList.add('in'); });
+  }
+
+  // 6. Metrics Count-Up Animation
+  var countElements = document.querySelectorAll('[data-count]');
+  var hasCounted = false;
+  function triggerCountUp() {
+    if (hasCounted || isReducedMotion) return;
+    hasCounted = true;
+    countElements.forEach(function(el) {
+      var target = parseInt(el.getAttribute('data-count'), 10);
+      var start = 0;
+      var duration = 1000;
+      var startTime = null;
+      function animStep(now) {
+        if (!startTime) startTime = now;
+        var p = Math.min(1, (now - startTime) / duration);
+        var ease = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(start + (target - start) * ease);
+        if (p < 1) requestAnimationFrame(animStep);
       }
-      function fallback(){
-        var r = document.createRange(); r.selectNodeContents(label);
-        var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      requestAnimationFrame(animStep);
+    });
+  }
+  var metricStrip = document.querySelector('.metrics-strip');
+  if (metricStrip && 'IntersectionObserver' in window) {
+    new IntersectionObserver(function(entries, obs) {
+      if (entries[0].isIntersecting) {
+        triggerCountUp();
+        obs.disconnect();
       }
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(done, fallback);
-      } else { fallback(); }
+    }, { threshold: 0.3 }).observe(metricStrip);
+  }
+
+  // 7. Mouse Spotlight Tracking on Cards
+  var cards = document.querySelectorAll('.spotlight-card');
+  cards.forEach(function(card) {
+    card.addEventListener('mousemove', function(e) {
+      var rect = card.getBoundingClientRect();
+      var x = e.clientX - rect.left;
+      var y = e.clientY - rect.top;
+      card.style.setProperty('--mouse-x', x + 'px');
+      card.style.setProperty('--mouse-y', y + 'px');
     });
   });
 
-  /* ---- hero telemetry trace: a live BLE/CGM-style signal under the headline ---- */
-  var cv = document.getElementById('trace');
+  // 8. Project Category Filter Tabs
+  var filterTabs = document.querySelectorAll('.filter-tab');
+  var projectCards = document.querySelectorAll('.spotlight-card');
+  filterTabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      filterTabs.forEach(function(t) {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+      });
+      tab.classList.add('active');
+      tab.setAttribute('aria-selected', 'true');
+      var filter = tab.getAttribute('data-filter');
+      projectCards.forEach(function(card) {
+        var cats = card.getAttribute('data-category') || '';
+        if (filter === 'all' || cats.indexOf(filter) !== -1) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+  });
+
+  // 9. Mobile Navigation Drawer
+  var menuBtn = document.getElementById('mobile-menu-btn');
+  var mobileDrawer = document.getElementById('mobile-drawer');
+  if (menuBtn && mobileDrawer) {
+    menuBtn.addEventListener('click', function() {
+      var isOpen = mobileDrawer.classList.contains('open');
+      if (isOpen) {
+        mobileDrawer.classList.remove('open');
+        menuBtn.setAttribute('aria-expanded', 'false');
+      } else {
+        mobileDrawer.classList.add('open');
+        menuBtn.setAttribute('aria-expanded', 'true');
+      }
+    });
+    document.querySelectorAll('.mobile-link').forEach(function(link) {
+      link.addEventListener('click', function() {
+        mobileDrawer.classList.remove('open');
+        menuBtn.setAttribute('aria-expanded', 'false');
+      });
+    });
+  }
+
+  // 10. Interactive BLE Simulator Lab
+  var glucoseVal = document.getElementById('tele-glucose-val');
+  var rssiVal = document.getElementById('tele-rssi-val');
+  var dropVal = document.getElementById('tele-drop-val');
+  var labStateText = document.getElementById('lab-state-text');
+  var labBtns = document.querySelectorAll('.lab-actions-row .lab-btn');
+
+  function setLabActive(activeBtn) {
+    labBtns.forEach(function(b) { b.classList.remove('active'); });
+    if (activeBtn) activeBtn.classList.add('active');
+  }
+
+  var btnLabStream = document.getElementById('btn-lab-stream');
+  var btnLabSpike = document.getElementById('btn-lab-spike');
+  var btnLabDrop = document.getElementById('btn-lab-drop');
+  var btnLabReconnect = document.getElementById('btn-lab-reconnect');
+
+  if (btnLabStream) {
+    btnLabStream.addEventListener('click', function() {
+      setLabActive(btnLabStream);
+      glucoseVal.innerHTML = '108 <span style="font-size:12px;color:var(--muted)">mg/dL</span>';
+      rssiVal.innerHTML = '-54 <span style="font-size:12px;color:var(--muted)">dBm</span>';
+      dropVal.textContent = '0.00%';
+      labStateText.textContent = 'STREAMING TELEMETRY (250 Hz)';
+      showToast('Radio state: Nominal continuous telemetry');
+    });
+  }
+  if (btnLabSpike) {
+    btnLabSpike.addEventListener('click', function() {
+      setLabActive(btnLabSpike);
+      glucoseVal.innerHTML = '<span style="color:var(--pulse)">184</span> <span style="font-size:12px;color:var(--muted)">mg/dL</span>';
+      rssiVal.innerHTML = '-58 <span style="font-size:12px;color:var(--muted)">dBm</span>';
+      labStateText.textContent = 'RAPID EXCURSION DETECTED (+3.2 mg/dL/min)';
+      showToast('Simulated post-meal glycemic excursion');
+    });
+  }
+  if (btnLabDrop) {
+    btnLabDrop.addEventListener('click', function() {
+      setLabActive(btnLabDrop);
+      rssiVal.innerHTML = '<span style="color:#FF6B6B">-94</span> <span style="font-size:12px;color:var(--muted)">dBm</span>';
+      dropVal.textContent = '12.4%';
+      labStateText.textContent = 'RADIO LINK WEAK / RETRYING PACKETS';
+      showToast('Radio link degraded: Cache queue activated');
+    });
+  }
+  if (btnLabReconnect) {
+    btnLabReconnect.addEventListener('click', function() {
+      setLabActive(btnLabReconnect);
+      labStateText.textContent = 'RE-ESTABLISHING COREBLUETOOTH PERIPHERAL';
+      setTimeout(function() {
+        glucoseVal.innerHTML = '112 <span style="font-size:12px;color:var(--muted)">mg/dL</span>';
+        rssiVal.innerHTML = '-52 <span style="font-size:12px;color:var(--muted)">dBm</span>';
+        dropVal.textContent = '0.00%';
+        labStateText.textContent = 'RECONNECTED · CACHE SYNCHRONIZED';
+        showToast('Autonomous BLE reconnect successful');
+      }, 700);
+    });
+  }
+
+  // 11. Command Palette (Cmd + K)
+  var paletteModal = document.getElementById('palette-modal');
+  var openPaletteBtn = document.getElementById('open-palette-btn');
+  var paletteInput = document.getElementById('palette-input');
+  var paletteOptions = document.querySelectorAll('.palette-item');
+
+  function openPalette() {
+    if (!paletteModal) return;
+    paletteModal.classList.add('open');
+    if (paletteInput) {
+      paletteInput.value = '';
+      paletteInput.focus();
+    }
+  }
+  function closePalette() {
+    if (!paletteModal) return;
+    paletteModal.classList.remove('open');
+  }
+
+  if (openPaletteBtn) {
+    openPaletteBtn.addEventListener('click', openPalette);
+  }
+
+  window.addEventListener('keydown', function(e) {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault();
+      if (paletteModal && paletteModal.classList.contains('open')) {
+        closePalette();
+      } else {
+        openPalette();
+      }
+    } else if (e.key === 'Escape' && paletteModal && paletteModal.classList.contains('open')) {
+      closePalette();
+    }
+  });
+
+  if (paletteModal) {
+    paletteModal.addEventListener('click', function(e) {
+      if (e.target === paletteModal) closePalette();
+    });
+  }
+
+  paletteOptions.forEach(function(item) {
+    item.addEventListener('click', function() {
+      var action = item.getAttribute('data-action');
+      closePalette();
+      if (action === 'work') location.hash = '#work';
+      else if (action === 'lab') location.hash = '#lab';
+      else if (action === 'experience') location.hash = '#experience';
+      else if (action === 'expertise') location.hash = '#expertise';
+      else if (action === 'resume') window.open('assets/Prakash-Eppala-Resume.pdf', '_blank');
+      else if (action === 'copy-email') {
+        navigator.clipboard.writeText('prakash.eppala@gmail.com');
+        showToast('Copied prakash.eppala@gmail.com');
+      } else if (action === 'theme') {
+        var current = root.getAttribute('data-theme') || 'dark';
+        applyTheme(current === 'dark' ? 'light' : 'dark');
+      }
+    });
+  });
+
+  // 12. Interactive Telemetry Canvas
+  var cv = document.getElementById('trace-canvas');
   if (cv && cv.getContext) {
-    var ctx = cv.getContext('2d'), w = 0, h = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
-    function size(){
-      var r = cv.getBoundingClientRect();
-      w = Math.max(1, r.width); h = Math.max(1, r.height);
-      cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+    var ctx = cv.getContext('2d');
+    var w = 0, h = 0;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var animFrameId = null;
+    var isCanvasVisible = true;
+    var pointerX = -1000, pointerY = -1000;
+    var pointerStrength = 0;
+
+    function resizeCanvas() {
+      var rect = cv.getBoundingClientRect();
+      w = Math.max(1, rect.width);
+      h = Math.max(1, rect.height);
+      cv.width = Math.round(w * dpr);
+      cv.height = Math.round(h * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
-    function css(v){ return getComputedStyle(root).getPropertyValue(v).trim() || '#45D6C0'; }
-    function curve(t, amp, k, phase){
-      // a glucose-like trace: slow drift with post-meal excursions
+
+    cv.addEventListener('pointermove', function(e) {
+      var rect = cv.getBoundingClientRect();
+      pointerX = e.clientX - rect.left;
+      pointerY = e.clientY - rect.top;
+      pointerStrength = 1.0;
+    });
+    cv.addEventListener('pointerleave', function() {
+      pointerStrength = 0;
+    });
+
+    var t = 0;
+    function drawWave() {
+      if (!isCanvasVisible || isReducedMotion) return;
+      ctx.clearRect(0, 0, w, h);
+
+      var isDark = (root.getAttribute('data-theme') !== 'light');
+      var signalColor = isDark ? '#3EE0C8' : '#007A6C';
+      var pulseColor = isDark ? '#FFA347' : '#B85900';
+      var gridColor = isDark ? '#1E2B3C' : '#D2DCE6';
+
+      // Telemetry Grid
+      ctx.save();
+      ctx.strokeStyle = gridColor;
+      ctx.globalAlpha = 0.35;
+      ctx.lineWidth = 1;
+      var gridSpacing = 44;
+      for (var y = h; y > 0; y -= gridSpacing) {
+        ctx.beginPath();
+        ctx.moveTo(0, y + 0.5);
+        ctx.lineTo(w, y + 0.5);
+        ctx.stroke();
+      }
+      for (var x = 0; x < w; x += gridSpacing) {
+        ctx.beginPath();
+        ctx.moveTo(x + 0.5, 0);
+        ctx.lineTo(x + 0.5, h);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // ECG & BLE Telemetry Waveform
+      ctx.save();
+      ctx.strokeStyle = signalColor;
+      ctx.lineWidth = 1.8;
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
       ctx.beginPath();
-      for (var x = 0; x <= w; x += 2) {
-        var u = x / Math.max(w, 1);
-        var v = Math.sin(u * 6.1 * k + t + phase) * 0.55
-              + Math.sin(u * 13.7 * k - t * 1.35 + phase) * 0.26
-              + Math.sin(u * 2.3 * k + t * 0.55) * 0.42;
-        var yv = h * 0.58 - v * amp;
-        if (x === 0) ctx.moveTo(x, yv); else ctx.lineTo(x, yv);
+
+      var amp = h * 0.22;
+      var baseline = h * 0.65;
+
+      for (var px = 0; px <= w; px += 2) {
+        var u = px / Math.max(w, 1);
+        var v = Math.sin(u * 7.5 + t) * 0.45
+              + Math.sin(u * 15.2 - t * 1.2) * 0.22
+              + Math.sin(u * 3.1 + t * 0.4) * 0.35;
+
+        // Interactive pointer wave ripple
+        var distToPointer = Math.abs(px - pointerX);
+        if (pointerStrength > 0 && distToPointer < 140) {
+          var ripple = Math.sin((distToPointer / 140) * Math.PI * 3 - t * 4) * (1 - distToPointer / 140) * 0.6;
+          v += ripple * pointerStrength;
+        }
+
+        var py = baseline - v * amp;
+        if (px === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
       }
       ctx.stroke();
-    }
-    function grid(){
-      ctx.save();
-      ctx.strokeStyle = css('--rule'); ctx.globalAlpha = 0.55; ctx.lineWidth = 1;
-      for (var gy = h; gy > 0; gy -= 46) { ctx.beginPath(); ctx.moveTo(0, gy + 0.5); ctx.lineTo(w, gy + 0.5); ctx.stroke(); }
-      for (var gx = 0; gx < w; gx += 46) { ctx.beginPath(); ctx.moveTo(gx + 0.5, 0); ctx.lineTo(gx + 0.5, h); ctx.stroke(); }
       ctx.restore();
+
+      // Secondary carrier trace
+      ctx.save();
+      ctx.strokeStyle = pulseColor;
+      ctx.lineWidth = 1.2;
+      ctx.globalAlpha = 0.35;
+      ctx.beginPath();
+      for (var px2 = 0; px2 <= w; px2 += 3) {
+        var u2 = px2 / Math.max(w, 1);
+        var v2 = Math.sin(u2 * 5.2 + t * 0.7 + 1.2) * 0.35 + Math.sin(u2 * 11.4 - t * 0.8) * 0.2;
+        var py2 = baseline * 0.95 - v2 * (amp * 0.6);
+        if (px2 === 0) ctx.moveTo(px2, py2);
+        else ctx.lineTo(px2, py2);
+      }
+      ctx.stroke();
+      ctx.restore();
+
+      t += 0.008;
+      animFrameId = requestAnimationFrame(drawWave);
     }
-    var t = 0, raf = null;
-    function frame(){
-      ctx.clearRect(0, 0, w, h);
-      grid();
-      var sig = css('--signal'), pul = css('--pulse');
-      ctx.lineJoin = 'round'; ctx.lineCap = 'round';
-      ctx.save(); ctx.globalAlpha = 0.22; ctx.strokeStyle = pul; ctx.lineWidth = 1.2;
-      curve(t * 0.6, h * 0.17, 0.7, 1.9); ctx.restore();
-      ctx.save(); ctx.globalAlpha = 0.5; ctx.strokeStyle = sig; ctx.lineWidth = 1.6;
-      ctx.shadowColor = sig; ctx.shadowBlur = 14;
-      curve(t, h * 0.24, 1, 0); ctx.restore();
-      if (!reduce) { t += 0.006; raf = requestAnimationFrame(frame); }
+
+    // Performance-critical: Pause animation when hero leaves viewport
+    var heroEl = document.querySelector('.hero');
+    if ('IntersectionObserver' in window && heroEl) {
+      new IntersectionObserver(function(entries) {
+        isCanvasVisible = entries[0].isIntersecting;
+        if (isCanvasVisible && !animFrameId && !isReducedMotion) {
+          animFrameId = requestAnimationFrame(drawWave);
+        } else if (!isCanvasVisible && animFrameId) {
+          cancelAnimationFrame(animFrameId);
+          animFrameId = null;
+        }
+      }, { threshold: 0.05 }).observe(heroEl);
     }
-    function start(){ size(); if (raf) cancelAnimationFrame(raf); raf = null; frame(); }
-    var rt;
-    window.addEventListener('resize', function(){ clearTimeout(rt); rt = setTimeout(start, 140); });
-    document.addEventListener('visibilitychange', function(){
-      if (document.hidden) { if (raf) cancelAnimationFrame(raf); raf = null; }
-      else if (!reduce && !raf) frame();
+
+    window.addEventListener('resize', function() {
+      resizeCanvas();
     });
-    start();
+    resizeCanvas();
+    if (!isReducedMotion) animFrameId = requestAnimationFrame(drawWave);
   }
+
+  // 13. Telemetry Packet Counter Tick
+  var packetCounter = document.getElementById('tele-packet-counter');
+  if (packetCounter) {
+    var packetCount = 14208;
+    setInterval(function() {
+      packetCount += Math.floor(Math.random() * 4) + 1;
+      packetCounter.textContent = packetCount.toLocaleString();
+    }, 400);
+  }
+
 })();
 </script>
-<!--ARTIFACT-END-->
+
 </body>
 </html>
