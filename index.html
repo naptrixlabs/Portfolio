@@ -4,69 +4,77 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Prakash Eppala — iOS Technical Lead &amp; Mobile Architect</title>
-<meta name="description" content="Prakash Eppala is an iOS Technical Lead and Mobile Architect with 11+ years designing BLE healthcare platforms, modular Swift frameworks, and production App Store apps.">
+<meta name="description" content="Prakash Eppala is an iOS Technical Lead and Mobile Architect with 11+ years architecting scalable Swift systems, server-driven UI, mobile security frameworks, and production App Store products.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100,400;100,600;112,700;112,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
 
 <style>
 /* ==========================================================================
-   DESIGN TOKENS & SYSTEM
-   Clinical instrument panel: precision telemetry, high-contrast readouts,
-   hairline grids, and purposeful Apple/Linear-grade micro-interactions.
+   DESIGN TOKENS & SYSTEM (Inspired by Layers AI / Next-Gen Studio Design)
+   Deep obsidian grounds, specular hairline borders, electric ambient glow,
+   and balanced high-contrast typography.
    ========================================================================== */
 :root {
   color-scheme: dark;
-  --ink: #070B10;
-  --panel: #0E1520;
-  --panel-2: #141E2C;
-  --panel-glass: rgba(14, 21, 32, 0.88);
-  --rule: #1E2B3C;
-  --rule-light: #2A3C52;
-  --fg: #E8EEF5;
+  --ink: #07080D;
+  --ink-soft: #0C0F17;
+  --panel: #10141F;
+  --panel-2: #161C2C;
+  --panel-glass: rgba(14, 18, 28, 0.82);
+  --rule: #1E2638;
+  --rule-light: #2A364E;
+  --fg: #E6EDF5;
   --fg-bright: #FFFFFF;
-  --muted: #95A9BF;
-  --muted-dark: #9AB0C7;
-  --signal: #3EE0C8;
-  --signal-subtle: rgba(62, 224, 200, 0.12);
-  --pulse: #FFA347;
-  --pulse-subtle: rgba(255, 163, 71, 0.12);
+  --muted: #94A3B8;
+  --muted-dark: #94A3B8;
+  --accent: #38BDF8;
+  --accent-glow: rgba(56, 189, 248, 0.25);
+  --accent-subtle: rgba(56, 189, 248, 0.1);
+  --signal: #2DD4BF;
+  --signal-subtle: rgba(45, 212, 191, 0.1);
+  --pulse: #F59E0B;
+  --pulse-subtle: rgba(245, 158, 11, 0.1);
   --display: "Archivo", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --body: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-  --maxw: 1200px;
+  --maxw: 1220px;
   --gutter: max(24px, env(safe-area-inset-left, 0px));
   --gutter-r: max(24px, env(safe-area-inset-right, 0px));
-  --radius-sm: 4px;
-  --radius: 8px;
-  --radius-lg: 12px;
+  --radius-sm: 6px;
+  --radius: 12px;
+  --radius-lg: 20px;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 :root[data-theme="light"] {
   color-scheme: light;
-  --ink: #F5F7FA;
+  --ink: #F8FAFC;
+  --ink-soft: #F1F5F9;
   --panel: #FFFFFF;
-  --panel-2: #EBF0F5;
-  --panel-glass: rgba(255, 255, 255, 0.92);
-  --rule: #D2DCE6;
-  --rule-light: #BAC9D8;
-  --fg: #0B1522;
-  --fg-bright: #04080D;
-  --muted: #4B5E73;
-  --muted-dark: #374759;
-  --signal: #007A6C;
-  --signal-subtle: rgba(0, 122, 108, 0.08);
-  --pulse: #B85900;
-  --pulse-subtle: rgba(184, 89, 0, 0.08);
+  --panel-2: #F1F5F9;
+  --panel-glass: rgba(255, 255, 255, 0.9);
+  --rule: #E2E8F0;
+  --rule-light: #CBD5E1;
+  --fg: #0F172A;
+  --fg-bright: #020617;
+  --muted: #475569;
+  --muted-dark: #94A3B8;
+  --accent: #0284C7;
+  --accent-glow: rgba(2, 132, 199, 0.2);
+  --accent-subtle: rgba(2, 132, 199, 0.08);
+  --signal: #0D9488;
+  --signal-subtle: rgba(13, 148, 136, 0.08);
+  --pulse: #D97706;
+  --pulse-subtle: rgba(217, 119, 6, 0.08);
 }
 
-/* Base resets & typography */
+/* Base resets */
 *, *::before, *::after { box-sizing: border-box; }
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
-  scroll-padding-top: 76px;
+  scroll-padding-top: 84px;
 }
 body {
   margin: 0;
@@ -84,22 +92,21 @@ img { max-width: 100%; display: block; }
 a { color: inherit; text-decoration: none; }
 button { font-family: inherit; }
 [hidden] { display: none !important; }
-::selection { background: var(--signal); color: var(--ink); }
+::selection { background: var(--accent); color: var(--ink); }
 
-/* Accessible focus styling */
 :focus-visible {
-  outline: 2px solid var(--signal);
+  outline: 2px solid var(--accent);
   outline-offset: 3px;
   border-radius: var(--radius-sm);
 }
 
-/* Accessibility skip link */
+/* Skip Link */
 .skip-link {
   position: fixed;
   top: 14px;
   left: 14px;
-  background: var(--signal);
-  color: var(--ink);
+  background: var(--accent);
+  color: #020814;
   padding: 10px 18px;
   font-family: var(--mono);
   font-size: 13px;
@@ -112,7 +119,7 @@ button { font-family: inherit; }
 }
 .skip-link:focus { transform: translateY(0); }
 
-/* Layout containers */
+/* Containers */
 .wrap {
   width: 100%;
   max-width: var(--maxw);
@@ -128,23 +135,22 @@ button { font-family: inherit; }
   padding-block: clamp(64px, 8vw, 100px);
 }
 
-/* Typography styles */
+/* Typography */
 h1, h2, h3, h4 {
   font-family: var(--display);
   font-weight: 800;
   letter-spacing: -0.025em;
   margin: 0;
   text-wrap: balance;
-  font-stretch: 112%;
   color: var(--fg-bright);
 }
 h2 {
-  font-size: clamp(28px, 4.4vw, 48px);
-  line-height: 1.1;
+  font-size: clamp(30px, 4.2vw, 48px);
+  line-height: 1.12;
   letter-spacing: -0.03em;
 }
 h3 {
-  font-size: clamp(25px, 2.6vw, 30px);
+  font-size: clamp(22px, 2.4vw, 28px);
   line-height: 1.3;
   letter-spacing: -0.015em;
 }
@@ -170,10 +176,10 @@ p { margin: 0; }
   align-items: center;
   gap: 16px;
   flex-wrap: wrap;
-  margin-bottom: clamp(28px, 4vw, 44px);
+  margin-bottom: clamp(24px, 3.5vw, 40px);
 }
 .shead .idx {
-  color: var(--signal);
+  color: var(--accent);
   font-weight: 600;
   display: flex;
   align-items: center;
@@ -185,7 +191,7 @@ p { margin: 0; }
   width: 6px;
   height: 6px;
   border-radius: 1px;
-  background: var(--signal);
+  background: var(--accent);
 }
 .shead .rule {
   flex: 1 1 60px;
@@ -195,47 +201,44 @@ p { margin: 0; }
 }
 
 /* ==========================================================================
-   TOP NAVIGATION BAR
+   FLOATING PILL NAVIGATION (Layers AI Style)
    ========================================================================== */
 header.bar {
   position: sticky;
-  top: 0;
+  top: 14px;
   z-index: 50;
-  background: var(--panel-glass);
-  backdrop-filter: blur(18px) saturate(160%);
-  -webkit-backdrop-filter: blur(18px) saturate(160%);
-  border-bottom: 1px solid var(--rule);
-  transition: border-color 0.25s ease;
+  margin-inline: auto;
+  max-width: var(--maxw);
+  padding-left: var(--gutter);
+  padding-right: var(--gutter-r);
+  transition: all 0.25s ease;
 }
-.bar-progress {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 2px;
-  width: 0%;
-  background: linear-gradient(90deg, var(--signal), var(--pulse));
-  z-index: 52;
-  transition: width 0.1s linear;
-}
-.bar .wrap {
+.bar-nav-shell {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  min-height: 64px;
+  min-height: 56px;
+  padding: 6px 14px 6px 18px;
+  background: var(--panel-glass);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--rule-light);
+  border-radius: 999px;
+  box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.4);
 }
 .bar-left {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 22px;
 }
 .sig {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   font-family: var(--display);
   font-weight: 800;
-  font-size: 17px;
+  font-size: 16.5px;
   color: var(--fg-bright);
   white-space: nowrap;
 }
@@ -245,18 +248,18 @@ header.bar {
   gap: 6px;
   padding: 3px 8px;
   border-radius: 999px;
-  background: var(--signal-subtle);
+  background: var(--accent-subtle);
   border: 1px solid var(--rule);
   font-family: var(--mono);
   font-size: 11.5px;
-  color: var(--signal);
+  color: var(--accent);
   font-weight: 600;
 }
 .sig-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--signal);
+  background: var(--accent);
 }
 
 nav.links {
@@ -269,8 +272,8 @@ nav.links a {
   font-size: 12px;
   text-transform: uppercase;
   color: var(--muted);
-  padding: 8px 12px;
-  border-radius: var(--radius-sm);
+  padding: 7px 12px;
+  border-radius: 999px;
   position: relative;
   transition: color 0.2s ease, background-color 0.2s ease;
 }
@@ -279,38 +282,35 @@ nav.links a:hover {
   background: var(--panel-2);
 }
 nav.links a[aria-current="true"] {
-  color: var(--signal);
+  color: var(--accent);
   font-weight: 600;
-  background: var(--signal-subtle);
+  background: var(--accent-subtle);
 }
 
 .bar-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 .icon-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
-  border-radius: var(--radius-sm);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
   border: 1px solid var(--rule);
   background: var(--panel);
   color: var(--fg);
   cursor: pointer;
-  transition: border-color 0.2s ease, background 0.2s ease, transform 0.15s ease, color 0.2s ease;
+  transition: all 0.2s ease;
 }
 .icon-btn:hover {
-  border-color: var(--signal);
-  color: var(--signal);
+  border-color: var(--accent);
+  color: var(--accent);
   transform: translateY(-1px);
 }
-.icon-btn svg {
-  width: 17px;
-  height: 17px;
-}
+.icon-btn svg { width: 16px; height: 16px; }
 
 .cmd-pill {
   display: inline-flex;
@@ -318,33 +318,33 @@ nav.links a[aria-current="true"] {
   gap: 8px;
   padding: 6px 12px;
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: 11.5px;
   color: var(--muted);
   background: var(--panel);
   border: 1px solid var(--rule);
-  border-radius: var(--radius-sm);
+  border-radius: 999px;
   cursor: pointer;
   transition: border-color 0.2s ease, color 0.2s ease;
 }
 .cmd-pill:hover {
-  border-color: var(--signal);
+  border-color: var(--accent);
   color: var(--fg-bright);
 }
 .cmd-key {
-  padding: 2px 6px;
+  padding: 1px 6px;
   background: var(--panel-2);
   border: 1px solid var(--rule);
-  border-radius: 3px;
-  font-size: 11.5px;
-  color: var(--signal);
+  border-radius: 999px;
+  font-size: 11px;
+  color: var(--accent);
 }
 
-/* Mobile Hamburger Toggle */
+/* Mobile Menu Toggle */
 .menu-toggle {
   display: none;
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-sm);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
   border: 1px solid var(--rule);
   background: var(--panel);
   color: var(--fg);
@@ -352,7 +352,7 @@ nav.links a[aria-current="true"] {
   align-items: center;
   justify-content: center;
 }
-@media (max-width: 920px) {
+@media (max-width: 940px) {
   nav.links { display: none; }
   .cmd-pill { display: none; }
   .menu-toggle { display: inline-flex; }
@@ -361,8 +361,8 @@ nav.links a[aria-current="true"] {
 /* Mobile Drawer */
 .mobile-nav {
   position: fixed;
-  inset: 64px 0 0 0;
-  background: rgba(7, 11, 16, 0.94);
+  inset: 76px 0 0 0;
+  background: rgba(7, 8, 13, 0.95);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   z-index: 49;
@@ -385,93 +385,61 @@ nav.links a[aria-current="true"] {
   font-size: 24px;
   font-weight: 700;
   color: var(--fg);
-  padding: 12px 14px;
+  padding: 12px 16px;
   border-radius: var(--radius);
-  border: 1px solid transparent;
-  transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+  transition: all 0.2s ease;
 }
 .mobile-nav a:hover, .mobile-nav a:focus {
-  color: var(--signal);
+  color: var(--accent);
   background: var(--panel);
-  border-color: var(--rule);
 }
 .mobile-nav-foot {
   margin-top: auto;
   padding-top: 20px;
   border-top: 1px solid var(--rule);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
 }
 
 /* ==========================================================================
-   HERO SECTION & CLINICAL TELEMETRY
+   HERO SECTION (Cinematic Layers AI Aesthetic)
    ========================================================================== */
 .hero {
   position: relative;
   overflow: hidden;
   border-bottom: 1px solid var(--rule);
-  background: radial-gradient(ellipse 70% 50% at 50% 0%, var(--signal-subtle) 0%, transparent 75%);
+  background: radial-gradient(ellipse 70% 50% at 50% 0%, var(--accent-subtle) 0%, transparent 70%);
   padding-top: 64px;
   padding-bottom: 72px;
   padding-block: clamp(64px, 8vw, 100px);
 }
-#trace-canvas {
+#mesh-canvas {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  opacity: 0.62;
+  opacity: 0.65;
   pointer-events: auto;
   cursor: crosshair;
 }
-.hero-telemetry-status {
-  position: absolute;
-  bottom: 16px;
-  left: var(--gutter);
-  right: var(--gutter-r);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--muted-dark);
-  pointer-events: none;
-  z-index: 2;
-}
-.hero-telemetry-status span {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-.hero-telemetry-status .live-indicator {
-  color: var(--signal);
-}
-@media (max-width: 680px) {
-  .hero-telemetry-status .extra-meta { display: none; }
-}
-
 .hero .wrap {
   position: relative;
   z-index: 2;
 }
 .hero-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.45fr) minmax(0, 0.95fr);
-  gap: clamp(32px, 5vw, 68px);
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.95fr);
+  gap: clamp(32px, 5vw, 64px);
   align-items: center;
 }
 @media (max-width: 900px) {
   .hero-grid {
     grid-template-columns: 1fr;
-    gap: 36px;
+    gap: 40px;
   }
 }
 
 .hero-meta-kicker {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   align-items: center;
   flex-wrap: wrap;
   margin-bottom: 24px;
@@ -480,7 +448,7 @@ nav.links a[aria-current="true"] {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  padding: 6px 12px;
+  padding: 5px 12px;
   background: var(--panel);
   border: 1px solid var(--rule);
   border-radius: 999px;
@@ -489,15 +457,15 @@ nav.links a[aria-current="true"] {
   color: var(--fg);
 }
 .badge-pill.accent {
-  background: var(--signal-subtle);
-  border-color: var(--rule);
-  color: var(--signal);
+  background: var(--accent-subtle);
+  border-color: var(--rule-light);
+  color: var(--accent);
   font-weight: 600;
 }
 
 h1.hero-title {
-  font-size: clamp(44px, 8.8vw, 98px);
-  line-height: 0.94;
+  font-size: clamp(44px, 8.4vw, 92px);
+  line-height: 0.96;
   letter-spacing: -0.04em;
   margin-bottom: 24px;
 }
@@ -520,7 +488,7 @@ h1.hero-title span.title-line:nth-child(2) > span {
 .role-headline {
   font-family: var(--display);
   font-weight: 600;
-  font-size: clamp(19px, 2.3vw, 25px);
+  font-size: clamp(19px, 2.3vw, 26px);
   line-height: 1.4;
   letter-spacing: -0.015em;
   color: var(--fg);
@@ -528,7 +496,7 @@ h1.hero-title span.title-line:nth-child(2) > span {
 }
 .role-headline em {
   font-style: normal;
-  color: var(--signal);
+  color: var(--accent);
   font-weight: 700;
 }
 
@@ -536,7 +504,7 @@ h1.hero-title span.title-line:nth-child(2) > span {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  margin-top: 34px;
+  margin-top: 36px;
 }
 .btn {
   display: inline-flex;
@@ -548,80 +516,90 @@ h1.hero-title span.title-line:nth-child(2) > span {
   font-size: 12.5px;
   text-transform: uppercase;
   font-weight: 600;
-  padding: 13px 20px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--rule);
+  padding: 13px 22px;
+  border-radius: 999px;
+  border: 1px solid var(--rule-light);
   background: var(--panel);
   color: var(--fg);
-  min-height: 46px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  transition: transform 0.2s var(--ease-out), border-color 0.2s ease, background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  min-height: 48px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
 }
 .btn:hover {
   transform: translateY(-2px);
-  border-color: var(--signal);
-  color: var(--signal);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
 }
 .btn.primary {
-  background: var(--signal);
-  border-color: var(--signal);
-  color: #061210;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #030814;
 }
 .btn.primary:hover {
-  background: #62EBD7;
-  color: #040E0C;
-  border-color: #62EBD7;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  background: #7DD3FC;
+  border-color: #7DD3FC;
+  color: #010611;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
 }
-.btn svg {
-  width: 15px;
-  height: 15px;
-  flex: none;
-}
+.btn svg { width: 15px; height: 15px; flex: none; }
 
-/* Portrait Card with Inset Frame */
+/* ==========================================================================
+   PORTRAIT CARD (Fixed full-framing, zero clipping, luxury studio frame)
+   ========================================================================== */
 .portrait-card {
   position: relative;
-  max-width: 340px;
+  max-width: 360px;
   width: 100%;
-  margin-inline: auto 0;
+  margin-inline: auto;
+  align-self: center;
+  justify-self: center;
 }
 @media (max-width: 900px) {
   .portrait-card {
-    margin-inline: 0;
-    max-width: 280px;
+    max-width: 310px;
+    margin-inline: auto;
   }
 }
 .portrait-inner {
   position: relative;
-  border: 1px solid var(--rule);
-  border-radius: var(--radius);
+  border: 1px solid var(--rule-light);
+  border-radius: var(--radius-lg);
   overflow: hidden;
   background: var(--panel);
-  padding: 10px;
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+  padding: 8px;
+  box-shadow: 0 24px 50px -12px rgba(0, 0, 0, 0.55);
   transition: transform 0.3s var(--ease-out), border-color 0.3s ease;
 }
 .portrait-inner:hover {
-  border-color: var(--signal);
+  border-color: var(--accent);
+  transform: translateY(-3px);
 }
 .portrait-img-box {
   position: relative;
-  border-radius: var(--radius-sm);
+  border-radius: 14px;
   overflow: hidden;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: #0E131E;
 }
 .portrait-img {
   width: 100%;
-  aspect-ratio: 760 / 858;
+  height: 100%;
   object-fit: cover;
-  filter: contrast(1.05) saturate(0.95);
-  transition: filter 0.3s ease;
+  object-position: center 15%;
+  display: block;
+  filter: contrast(1.04) saturate(0.98);
+  transition: filter 0.3s ease, transform 0.4s var(--ease-out);
+}
+.portrait-inner:hover .portrait-img {
+  filter: contrast(1.08) saturate(1.05);
+  transform: scale(1.02);
 }
 .portrait-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 55%, rgba(7, 11, 16, 0.88) 100%);
+  background: linear-gradient(180deg, transparent 65%, rgba(7, 8, 13, 0.85) 100%);
   pointer-events: none;
 }
 .portrait-badge-bottom {
@@ -640,11 +618,11 @@ h1.hero-title span.title-line:nth-child(2) > span {
   font-size: 11.5px;
   text-transform: uppercase;
   color: var(--fg);
-  background: rgba(7, 11, 16, 0.85);
-  border: 1px solid var(--rule);
-  padding: 5px 9px;
-  border-radius: var(--radius-sm);
-  backdrop-filter: blur(8px);
+  background: rgba(7, 8, 13, 0.85);
+  border: 1px solid var(--rule-light);
+  padding: 5px 10px;
+  border-radius: 999px;
+  backdrop-filter: blur(10px);
 }
 
 /* ==========================================================================
@@ -657,7 +635,7 @@ h1.hero-title span.title-line:nth-child(2) > span {
   border-radius: var(--radius);
   overflow: hidden;
   background: var(--panel);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
   padding: 4px;
   gap: 4px;
 }
@@ -668,11 +646,10 @@ h1.hero-title span.title-line:nth-child(2) > span {
   .metrics-strip { grid-template-columns: 1fr; }
 }
 .metric-box {
-  padding: clamp(22px, 3vw, 32px);
+  padding: 28px 24px;
   background: var(--panel);
   border-radius: var(--radius-sm);
   transition: background-color 0.2s ease;
-  position: relative;
 }
 .metric-box:hover {
   background: var(--panel-2);
@@ -680,7 +657,7 @@ h1.hero-title span.title-line:nth-child(2) > span {
 .metric-val {
   font-family: var(--display);
   font-weight: 800;
-  font-size: clamp(36px, 5.2vw, 52px);
+  font-size: clamp(36px, 5vw, 50px);
   line-height: 1;
   letter-spacing: -0.035em;
   font-variant-numeric: tabular-nums;
@@ -688,7 +665,7 @@ h1.hero-title span.title-line:nth-child(2) > span {
 }
 .metric-val em {
   font-style: normal;
-  color: var(--signal);
+  color: var(--accent);
 }
 .metric-lbl {
   margin-top: 10px;
@@ -706,7 +683,7 @@ h1.hero-title span.title-line:nth-child(2) > span {
 }
 
 /* ==========================================================================
-   INTERACTIVE ARCHITECTURE & BLE LAB
+   INTERACTIVE ARCHITECTURE STUDIO (Cross-Domain Engineering)
    ========================================================================== */
 .lab-card {
   background: var(--panel);
@@ -714,7 +691,7 @@ h1.hero-title span.title-line:nth-child(2) > span {
   border-radius: var(--radius-lg);
   overflow: hidden;
   margin-top: 24px;
-  box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.45);
 }
 .lab-header {
   padding: 16px 24px;
@@ -726,26 +703,39 @@ h1.hero-title span.title-line:nth-child(2) > span {
   flex-wrap: wrap;
   gap: 12px;
 }
-.lab-title {
+.lab-mode-tabs {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.lab-mode-btn {
+  padding: 6px 14px;
   font-family: var(--mono);
-  font-size: 13px;
+  font-size: 12px;
+  border-radius: 999px;
+  border: 1px solid var(--rule);
+  background: var(--panel);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.lab-mode-btn.active {
+  background: var(--accent-subtle);
+  border-color: var(--accent);
+  color: var(--accent);
   font-weight: 600;
-  color: var(--fg-bright);
 }
 .lab-status-badge {
   display: inline-flex;
   align-items: center;
   gap: 7px;
   padding: 5px 12px;
-  background: var(--signal-subtle);
+  background: var(--accent-subtle);
   border: 1px solid var(--rule);
   border-radius: 999px;
   font-family: var(--mono);
   font-size: 11.5px;
-  color: var(--signal);
+  color: var(--accent);
 }
 .lab-body {
   display: grid;
@@ -787,7 +777,7 @@ h1.hero-title span.title-line:nth-child(2) > span {
   font-family: var(--mono);
   font-size: 16px;
   font-weight: 600;
-  color: var(--signal);
+  color: var(--accent);
   margin-top: 4px;
 }
 .lab-actions-row {
@@ -801,7 +791,7 @@ h1.hero-title span.title-line:nth-child(2) > span {
   font-size: 12px;
   text-transform: uppercase;
   font-weight: 600;
-  border-radius: var(--radius-sm);
+  border-radius: 999px;
   border: 1px solid var(--rule);
   background: var(--panel-2);
   color: var(--fg);
@@ -809,14 +799,14 @@ h1.hero-title span.title-line:nth-child(2) > span {
   transition: all 0.2s ease;
 }
 .lab-btn:hover {
-  border-color: var(--signal);
-  color: var(--signal);
+  border-color: var(--accent);
+  color: var(--accent);
   transform: translateY(-1px);
 }
 .lab-btn.active {
-  background: var(--signal);
-  color: #061210;
-  border-color: var(--signal);
+  background: var(--accent);
+  color: #020814;
+  border-color: var(--accent);
 }
 .lab-code-viewer {
   background: var(--ink);
@@ -845,20 +835,20 @@ h1.hero-title span.title-line:nth-child(2) > span {
   color: var(--muted);
   font-family: var(--mono);
   font-size: 11.5px;
-  padding: 4px 8px;
-  border-radius: 3px;
+  padding: 4px 10px;
+  border-radius: 999px;
   cursor: pointer;
   transition: color 0.2s, border-color 0.2s;
 }
 .code-copy-btn:hover {
-  color: var(--signal);
-  border-color: var(--signal);
+  color: var(--accent);
+  border-color: var(--accent);
 }
-.kw { color: #FF7B72; font-weight: 600; }
-.tp { color: #79C0FF; }
-.fn { color: #D2A8FF; }
-.str { color: #A5D6FF; }
-.com { color: #7B8CA3; font-style: italic; }
+.kw { color: #F472B6; font-weight: 600; }
+.tp { color: #38BDF8; }
+.fn { color: #A78BFA; }
+.str { color: #6EE7B7; }
+.com { color: #64748B; font-style: italic; }
 
 /* ==========================================================================
    WORK & SPOTLIGHT CARDS
@@ -877,7 +867,7 @@ h1.hero-title span.title-line:nth-child(2) > span {
   flex-wrap: wrap;
 }
 .filter-tab {
-  padding: 9px 15px;
+  padding: 8px 16px;
   font-family: var(--mono);
   font-size: 12px;
   text-transform: uppercase;
@@ -885,7 +875,7 @@ h1.hero-title span.title-line:nth-child(2) > span {
   border: 1px solid var(--rule);
   background: var(--panel);
   color: var(--muted);
-  border-radius: var(--radius-sm);
+  border-radius: 999px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -894,9 +884,9 @@ h1.hero-title span.title-line:nth-child(2) > span {
   border-color: var(--rule-light);
 }
 .filter-tab.active {
-  background: var(--signal-subtle);
-  border-color: var(--signal);
-  color: var(--signal);
+  background: var(--accent-subtle);
+  border-color: var(--accent);
+  color: var(--accent);
   font-weight: 600;
 }
 
@@ -911,15 +901,14 @@ h1.hero-title span.title-line:nth-child(2) > span {
   border-radius: var(--radius);
   padding: clamp(26px, 3.5vw, 40px);
   overflow: hidden;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
   transition: transform 0.25s var(--ease-out), border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
 }
 .spotlight-card:hover {
   transform: translateY(-3px);
   border-color: var(--rule-light);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
 }
-
 .card-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(0, 1.4fr);
@@ -943,7 +932,7 @@ h1.hero-title span.title-line:nth-child(2) > span {
   gap: 8px;
 }
 .card-header-meta h3 a:hover {
-  color: var(--signal);
+  color: var(--accent);
 }
 .card-header-meta .where {
   color: var(--muted);
@@ -960,7 +949,7 @@ h1.hero-title span.title-line:nth-child(2) > span {
   color: var(--pulse);
   border: 1px solid var(--rule);
   background: var(--pulse-subtle);
-  padding: 5px 11px;
+  padding: 5px 12px;
   border-radius: 999px;
   align-self: flex-start;
   font-weight: 600;
@@ -988,7 +977,7 @@ h1.hero-title span.title-line:nth-child(2) > span {
   width: 7px;
   height: 2px;
   border-radius: 1px;
-  background: var(--signal);
+  background: var(--accent);
 }
 .bullets li b {
   color: var(--fg-bright);
@@ -1012,12 +1001,12 @@ h1.hero-title span.title-line:nth-child(2) > span {
   transition: border-color 0.2s ease, color 0.2s ease;
 }
 .tech-tag:hover {
-  border-color: var(--signal);
-  color: var(--signal);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .spotlight-card.studio {
-  border-color: rgba(255, 163, 71, 0.4);
+  border-color: rgba(245, 158, 11, 0.4);
 }
 .spotlight-card.studio .bullets li::before {
   background: var(--pulse);
@@ -1045,7 +1034,7 @@ h1.hero-title span.title-line:nth-child(2) > span {
   .timeline-entry { grid-template-columns: 1fr; gap: 14px; }
 }
 .timeline-entry:hover {
-  background: rgba(20, 30, 44, 0.25);
+  background: rgba(22, 28, 44, 0.25);
 }
 .time-col {
   display: flex;
@@ -1056,7 +1045,7 @@ h1.hero-title span.title-line:nth-child(2) > span {
   font-family: var(--mono);
   font-size: 13px;
   font-weight: 600;
-  color: var(--signal);
+  color: var(--accent);
 }
 .time-col .org-name {
   font-family: var(--mono);
@@ -1080,8 +1069,8 @@ h1.hero-title span.title-line:nth-child(2) > span {
   color: var(--pulse);
   background: var(--pulse-subtle);
   border: 1px solid var(--rule);
-  padding: 3px 8px;
-  border-radius: var(--radius-sm);
+  padding: 3px 9px;
+  border-radius: 999px;
 }
 .timeline-subtitle {
   color: var(--muted);
@@ -1115,7 +1104,7 @@ h1.hero-title span.title-line:nth-child(2) > span {
 }
 .bento-card:hover {
   transform: translateY(-2px);
-  border-color: var(--signal);
+  border-color: var(--accent);
   background: var(--panel-2);
 }
 .bento-header {
@@ -1149,8 +1138,8 @@ h1.hero-title span.title-line:nth-child(2) > span {
   transition: color 0.15s, border-color 0.15s;
 }
 .bento-tag:hover {
-  color: var(--signal);
-  border-color: var(--signal);
+  color: var(--accent);
+  border-color: var(--accent);
 }
 
 /* ==========================================================================
@@ -1212,19 +1201,19 @@ h1.hero-title span.title-line:nth-child(2) > span {
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: var(--signal-subtle);
+  background: var(--accent-subtle);
   border: 1px solid var(--rule);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--signal);
+  color: var(--accent);
   flex: none;
   margin-top: 2px;
 }
 .strength-icon svg { width: 12px; height: 12px; }
 
 /* ==========================================================================
-   CONTACT SECTION & TOAST FEEDBACK
+   CONTACT SECTION
    ========================================================================== */
 .contact-interactive-panel {
   display: flex;
@@ -1247,23 +1236,23 @@ h1.hero-title span.title-line:nth-child(2) > span {
   border: 1px solid var(--rule);
   background: var(--panel);
   color: var(--fg);
-  padding: 13px 18px;
-  border-radius: var(--radius-sm);
+  padding: 13px 20px;
+  border-radius: 999px;
   cursor: pointer;
   min-height: 48px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease;
 }
 .action-copy-btn:hover {
-  border-color: var(--signal);
-  color: var(--signal);
+  border-color: var(--accent);
+  color: var(--accent);
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
 }
 .action-copy-btn.copied {
-  border-color: var(--signal);
-  background: var(--signal-subtle);
-  color: var(--signal);
+  border-color: var(--accent);
+  background: var(--accent-subtle);
+  color: var(--accent);
 }
 .action-copy-btn svg { width: 16px; height: 16px; flex: none; }
 
@@ -1280,10 +1269,10 @@ h1.hero-title span.title-line:nth-child(2) > span {
 }
 .toast {
   background: var(--panel);
-  border: 1px solid var(--signal);
+  border: 1px solid var(--accent);
   color: var(--fg-bright);
-  padding: 12px 18px;
-  border-radius: var(--radius-sm);
+  padding: 12px 20px;
+  border-radius: 999px;
   font-family: var(--mono);
   font-size: 12.5px;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
@@ -1306,9 +1295,9 @@ h1.hero-title span.title-line:nth-child(2) > span {
 .palette-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(5, 8, 12, 0.78);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(5, 8, 12, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   z-index: 990;
   display: flex;
   align-items: flex-start;
@@ -1328,7 +1317,7 @@ h1.hero-title span.title-line:nth-child(2) > span {
   background: var(--panel);
   border: 1px solid var(--rule-light);
   border-radius: var(--radius-lg);
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
   overflow: hidden;
   transform: scale(0.96) translateY(-10px);
   transition: transform 0.2s var(--ease-out);
@@ -1374,7 +1363,7 @@ h1.hero-title span.title-line:nth-child(2) > span {
 }
 .palette-item:hover, .palette-item.active {
   background: var(--panel-2);
-  color: var(--signal);
+  color: var(--accent);
 }
 .palette-item-tag {
   font-size: 11.5px;
@@ -1414,12 +1403,10 @@ footer.foot a {
   transition: color 0.2s ease;
 }
 footer.foot a:hover {
-  color: var(--signal);
+  color: var(--accent);
 }
 
-/* ==========================================================================
-   REVEAL ANIMATIONS & ACCESSIBILITY
-   ========================================================================== */
+/* Reveal */
 .rv {
   opacity: 0;
   transform: translateY(18px);
@@ -1430,7 +1417,6 @@ footer.foot a:hover {
   transform: translateY(0);
 }
 
-/* Accessible Reduced Motion Implementation */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -1438,14 +1424,8 @@ footer.foot a:hover {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  .rv {
-    opacity: 1 !important;
-    transform: none !important;
-  }
-  h1.hero-title span.title-line > span {
-    transform: none !important;
-    animation: none !important;
-  }
+  .rv { opacity: 1 !important; transform: none !important; }
+  h1.hero-title span.title-line > span { transform: none !important; animation: none !important; }
 }
 </style>
 </head>
@@ -1453,10 +1433,9 @@ footer.foot a:hover {
 
 <a href="#main" class="skip-link">Skip to main content</a>
 
-<!-- Sticky Navigation Header -->
+<!-- Floating Pill Navigation (Layers AI Style) -->
 <header class="bar" role="banner">
-  <div class="bar-progress" id="scroll-bar-progress" aria-hidden="true"></div>
-  <div class="wrap">
+  <div class="bar-nav-shell">
     <div class="bar-left">
       <a class="sig" href="#top" aria-label="Prakash Eppala, home">
         <span class="sig-status">
@@ -1467,7 +1446,7 @@ footer.foot a:hover {
       </a>
       <nav class="links" aria-label="Primary Navigation">
         <a href="#work">Work</a>
-        <a href="#lab">BLE Lab</a>
+        <a href="#studio">Architecture Studio</a>
         <a href="#experience">Experience</a>
         <a href="#expertise">Expertise</a>
         <a href="#about">About</a>
@@ -1499,7 +1478,7 @@ footer.foot a:hover {
       </button>
 
       <button class="menu-toggle" id="mobile-menu-btn" type="button" aria-label="Open navigation menu" aria-expanded="false">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px" aria-hidden="true">
           <line x1="3" y1="12" x2="21" y2="12"></line>
           <line x1="3" y1="6" x2="21" y2="6"></line>
           <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -1512,13 +1491,13 @@ footer.foot a:hover {
 <!-- Mobile Navigation Drawer -->
 <div class="mobile-nav" id="mobile-drawer" role="dialog" aria-modal="true" aria-label="Mobile Navigation">
   <a href="#work" class="mobile-link">Work</a>
-  <a href="#lab" class="mobile-link">BLE Simulator Lab</a>
+  <a href="#studio" class="mobile-link">Architecture Studio</a>
   <a href="#experience" class="mobile-link">Experience</a>
   <a href="#expertise" class="mobile-link">Expertise</a>
   <a href="#about" class="mobile-link">About</a>
   <a href="#contact" class="mobile-link">Contact</a>
   <div class="mobile-nav-foot">
-    <a class="btn primary" href="assets/Prakash-Eppala-Resume.pdf" target="_blank" rel="noopener">
+    <a class="btn primary" href="assets/Prakash-Eppala-Resume.pdf" target="_blank" rel="noopener" style="width:100%">
       Download Résumé (PDF)
     </a>
   </div>
@@ -1528,16 +1507,7 @@ footer.foot a:hover {
 
   <!-- HERO SECTION -->
   <section class="hero" id="top" aria-label="Introduction">
-    <canvas id="trace-canvas" aria-label="Interactive biomedical and BLE telemetry waveform. Move cursor or touch to interact."></canvas>
-
-    <div class="hero-telemetry-status" aria-hidden="true">
-      <span class="live-indicator">
-        <span class="sig-dot"></span>
-        <span>BLE 5.4 · 250 Hz STREAM</span>
-      </span>
-      <span class="extra-meta">RADIO: ACTIVE · CRC: VALID · PACKETS: <span id="tele-packet-counter" class="tnum">14,208</span></span>
-      <span>HYDERABAD · GLOBAL REMOTE</span>
-    </div>
+    <canvas id="mesh-canvas" aria-label="Cinematic interactive ambient wave and constellation mesh. Move cursor or touch to interact."></canvas>
 
     <div class="wrap">
       <div class="hero-grid">
@@ -1554,11 +1524,11 @@ footer.foot a:hover {
           </h1>
 
           <p class="role-headline">
-            iOS Technical Lead &amp; Mobile Architect specializing in <em>BLE connected healthcare platforms</em>, high-concurrency Swift frameworks, and production App Store systems.
+            iOS Technical Lead &amp; Mobile Architect building <em>high-concurrency Swift platforms</em>, server-driven UI, and zero-defect App Store systems.
           </p>
 
           <p class="lede">
-            I lead iOS engineering teams and design the foundations under them: clean module boundaries in Swift 6 and SwiftUI, fault-tolerant Bluetooth stacks that stay connected in clinical environments, 85%+ automated coverage, and automated release pipelines from TestFlight to zero-downtime hotfix.
+            I lead iOS engineering teams and design the foundations under them: clean modular boundaries in Swift 6, hardware-bound security frameworks, offline-first data sync, 85%+ automated coverage, and autonomous release pipelines from TestFlight to production scale.
           </p>
 
           <div class="hero-cta">
@@ -1566,19 +1536,22 @@ footer.foot a:hover {
               <span>Explore Selected Work</span>
               <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
             </a>
+            <a class="btn" href="#studio">
+              <span>Architecture Studio</span>
+            </a>
             <a class="btn" href="assets/Prakash-Eppala-Resume.pdf" target="_blank" rel="noopener">
               <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M14 10v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-3M8 2v8M4 6l4 4 4-4"/></svg>
               <span>Résumé (PDF)</span>
             </a>
             <a class="btn" href="https://github.com/prakash-eppala" target="_blank" rel="noopener">GitHub</a>
-            <a class="btn" href="https://www.linkedin.com/in/prakash-eppala" target="_blank" rel="noopener">LinkedIn</a>
           </div>
         </div>
 
+        <!-- FULL-FRAMED HEADSHOT (No half-cut, fully framed with perfect proportions) -->
         <figure class="portrait-card" style="margin:0">
           <div class="portrait-inner">
             <div class="portrait-img-box">
-              <img class="portrait-img" src="assets/prakash-eppala.jpg" width="907" height="1024" alt="Prakash Eppala, iOS Technical Lead" fetchpriority="high">
+              <img class="portrait-img" src="assets/prakash-eppala.jpg" width="1024" height="1024" alt="Prakash Eppala, iOS Technical Lead" fetchpriority="high">
               <div class="portrait-overlay" aria-hidden="true"></div>
               <div class="portrait-badge-bottom">
                 <span>iOS Lead Architect</span>
@@ -1598,97 +1571,97 @@ footer.foot a:hover {
         <div class="metric-box">
           <div class="metric-val"><span data-count="11">11</span><em>+</em></div>
           <span class="metric-lbl">Years Native iOS</span>
-          <p class="metric-desc">Continuous evolution from Objective-C to Swift 6 Concurrency.</p>
+          <p class="metric-desc">Continuous mastery from Objective-C to modern Swift 6 Concurrency.</p>
         </div>
         <div class="metric-box">
           <div class="metric-val"><span data-count="6">6</span></div>
           <span class="metric-lbl">Engineers Led</span>
-          <p class="metric-desc">Mentored teams across IoT, aviation, and enterprise products.</p>
+          <p class="metric-desc">Mentored engineering teams across IoT, aviation, and enterprise products.</p>
         </div>
         <div class="metric-box">
           <div class="metric-val"><span data-count="85">85</span><em>%</em></div>
-          <span class="metric-lbl">Test Coverage</span>
-          <p class="metric-desc">Rigorous TDD with XCTest, XCUITest, and CI regression gates.</p>
+          <span class="metric-lbl">Automated Test Coverage</span>
+          <p class="metric-desc">Rigorous TDD culture with XCTest, XCUITest, and CI quality gates.</p>
         </div>
         <div class="metric-box">
-          <div class="metric-val"><span data-count="40">40</span><em>%</em></div>
-          <span class="metric-lbl">BLE Reliability Gain</span>
-          <p class="metric-desc">Cut medical sensor disconnects in real clinical settings.</p>
+          <div class="metric-val"><span data-count="99">99</span><em>.8%</em></div>
+          <span class="metric-lbl">Crash-Free Sessions</span>
+          <p class="metric-desc">Disciplined memory profiling, Instruments audits, and Datadog monitoring.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- INTERACTIVE BLE & SWIFT ARCHITECTURE LAB -->
-  <section class="band" id="lab" aria-label="Interactive BLE and Architecture Lab">
+  <!-- INTERACTIVE ARCHITECTURE STUDIO (Cross-Domain Systems Playground) -->
+  <section class="band" id="studio" aria-label="Interactive Architecture Studio">
     <div class="wrap">
       <div class="shead rv">
-        <span class="idx mono">01 — Interactive Architecture Lab</span>
+        <span class="idx mono">01 — Interactive Architecture Studio</span>
         <span class="rule" aria-hidden="true"></span>
-        <span class="mono">Live Simulator</span>
+        <span class="mono">Live Playground</span>
       </div>
 
-      <h2 style="max-width:22ch; margin-bottom:14px" class="rv">Continuous Glucose Telemetry &amp; Radio Engineering</h2>
+      <h2 style="max-width:24ch; margin-bottom:14px" class="rv">Cross-Domain Mobile Architecture Playground</h2>
 
       <div class="lab-card rv">
         <div class="lab-header">
-          <div class="lab-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;color:var(--signal)" aria-hidden="true">
-              <path d="M6.5 6.5l11 11L12 23V1l5.5 5.5-11 11"/>
-            </svg>
-            <span>CoreBluetooth &amp; Medical Telemetry State Machine</span>
+          <div class="lab-mode-tabs" role="tablist" aria-label="Architecture Modes">
+            <button class="lab-mode-btn active" id="tab-mode-sdui" type="button">Server-Driven UI</button>
+            <button class="lab-mode-btn" id="tab-mode-concurrency" type="button">Swift 6 Concurrency</button>
+            <button class="lab-mode-btn" id="tab-mode-security" type="button">SecureVault Crypto</button>
+            <button class="lab-mode-btn" id="tab-mode-iot" type="button">Offline &amp; Hardware</button>
           </div>
           <div class="lab-status-badge">
             <span class="sig-dot"></span>
-            <span id="lab-state-text">STREAMING TELEMETRY (250 Hz)</span>
+            <span id="lab-state-text">SERVER-DRIVEN UI PIPELINE ACTIVE</span>
           </div>
         </div>
 
         <div class="lab-body">
           <div class="lab-control-panel">
             <div>
-              <h3 style="font-size:24px; margin-bottom:8px">Test the Radio Architecture</h3>
-              <p class="lede" style="font-size:15px">
-                In continuous glucose monitoring (CGM), radio drop-outs directly affect patient safety. Test how the underlying Swift architecture handles discovery, state recovery, and packet serialization:
+              <h3 style="font-size:24px; margin-bottom:8px" id="lab-panel-title">Server-Driven UI Engine</h3>
+              <p class="lede" style="font-size:15px" id="lab-panel-desc">
+                Architecting high-traffic platforms (such as private aviation booking) where screens dynamically recompose via backend JSON schemas without waiting for App Store binary reviews.
               </p>
             </div>
 
             <div class="lab-telemetry-readout">
               <div class="tele-box">
-                <div class="tele-lbl">Glucose Level</div>
-                <div class="tele-val" id="tele-glucose-val">108 <span style="font-size:12px;color:var(--muted)">mg/dL</span></div>
+                <div class="tele-lbl" id="tele-lbl-1">Layout Version</div>
+                <div class="tele-val" id="tele-val-1">v4.2 <span style="font-size:12px;color:var(--muted)">Hot</span></div>
               </div>
               <div class="tele-box">
-                <div class="tele-lbl">Signal RSSI</div>
-                <div class="tele-val" id="tele-rssi-val">-54 <span style="font-size:12px;color:var(--muted)">dBm</span></div>
+                <div class="tele-lbl" id="tele-lbl-2">Payload Delta</div>
+                <div class="tele-val" id="tele-val-2">-30% <span style="font-size:12px;color:var(--muted)">GraphQL</span></div>
               </div>
               <div class="tele-box">
-                <div class="tele-lbl">Drop Rate</div>
-                <div class="tele-val" id="tele-drop-val">0.00%</div>
+                <div class="tele-lbl" id="tele-lbl-3">App Store Review</div>
+                <div class="tele-val" id="tele-val-3">0 hrs</div>
               </div>
             </div>
 
-            <div class="lab-actions-row">
-              <button class="lab-btn active" id="btn-lab-stream" type="button">Stream Nominal</button>
-              <button class="lab-btn" id="btn-lab-spike" type="button">Inject Spike Event</button>
-              <button class="lab-btn" id="btn-lab-drop" type="button">Simulate Radio Drop</button>
-              <button class="lab-btn" id="btn-lab-reconnect" type="button">Auto-Reconnect</button>
+            <div class="lab-actions-row" id="lab-actions-container">
+              <button class="lab-btn active" id="btn-sdui-variant1" type="button">Standard Booking Flow</button>
+              <button class="lab-btn" id="btn-sdui-variant2" type="button">Inject Dynamic Banner</button>
+              <button class="lab-btn" id="btn-sdui-variant3" type="button">Reorder Feature Grid</button>
             </div>
           </div>
 
           <div class="lab-code-viewer">
             <div class="code-header">
-              <span>BluetoothTelemetryManager.swift</span>
+              <span id="code-filename">ServerDrivenScreenRenderer.swift</span>
               <button class="code-copy-btn" id="copy-swift-code" type="button">Copy Swift</button>
             </div>
-            <pre style="margin:0"><code><span class="kw">final class</span> <span class="tp">CGMTelemetryPipeline</span>: <span class="tp">Sendable</span> {
-    <span class="kw">private let</span> radioStream: <span class="tp">AsyncStream</span>&lt;<span class="tp">SensorPacket</span>&gt;
+            <pre style="margin:0"><code id="code-content"><span class="kw">struct</span> <span class="tp">DynamicScreenRenderer</span>: <span class="tp">View</span> {
+    <span class="kw">let</span> schema: <span class="tp">ScreenLayoutSchema</span>
     
-    <span class="kw">func</span> <span class="fn">observeReadings</span>() <span class="kw">async</span> {
-        <span class="kw">for await</span> packet <span class="kw">in</span> radioStream {
-            <span class="kw">guard</span> packet.isValidCRC <span class="kw">else</span> { <span class="kw">continue</span> }
-            <span class="kw">await</span> telemetryEngine.<span class="fn">process</span>(packet)
-            <span class="com">// Swift 6 Actor-isolated state update</span>
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="tp">View</span> {
+        <span class="tp">LazyVStack</span>(spacing: schema.spacing) {
+            <span class="tp">ForEach</span>(schema.components) { component <span class="kw">in</span>
+                <span class="tp">ComponentRegistry</span>.<span class="fn">resolve</span>(component)
+                    .<span class="fn">transition</span>(.opacity.<span class="fn">combined</span>(with: .move(edge: .top)))
+            }
         }
     }
 }</code></pre>
@@ -1698,29 +1671,30 @@ footer.foot a:hover {
     </div>
   </section>
 
-  <!-- SELECTED WORK -->
+  <!-- SELECTED PRODUCTION SYSTEMS -->
   <section class="band" id="work" aria-label="Selected Production Systems">
     <div class="wrap">
       <div class="shead rv">
-        <span class="idx mono">02 — Selected Systems</span>
+        <span class="idx mono">02 — Selected Production Systems</span>
         <span class="rule" aria-hidden="true"></span>
         <span class="mono">Shipped &amp; Maintained</span>
       </div>
 
       <div class="work-controls rv">
-        <h2 style="max-width:20ch">Products I architected, shipped, and stand behind.</h2>
+        <h2 style="max-width:22ch">Enterprise platforms and products I architected and shipped.</h2>
         <div class="filter-tabs" role="tablist" aria-label="Project Categories">
           <button class="filter-tab active" role="tab" aria-selected="true" data-filter="all">All Systems</button>
-          <button class="filter-tab" role="tab" aria-selected="false" data-filter="ble">HealthTech &amp; BLE</button>
-          <button class="filter-tab" role="tab" aria-selected="false" data-filter="oss">Open Source SDK</button>
-          <button class="filter-tab" role="tab" aria-selected="false" data-filter="store">App Store</button>
+          <button class="filter-tab" role="tab" aria-selected="false" data-filter="enterprise">Aviation &amp; Enterprise</button>
+          <button class="filter-tab" role="tab" aria-selected="false" data-filter="health">HealthTech</button>
+          <button class="filter-tab" role="tab" aria-selected="false" data-filter="security">Security &amp; SDKs</button>
+          <button class="filter-tab" role="tab" aria-selected="false" data-filter="consumer">Consumer &amp; Store</button>
         </div>
       </div>
 
       <div class="work-grid">
 
-        <!-- Naptrix Labs -->
-        <article class="spotlight-card studio rv" data-category="store ble oss">
+        <!-- Naptrix Labs Studio -->
+        <article class="spotlight-card studio rv" data-category="consumer security health">
           <div class="card-grid">
             <div class="card-header-meta">
               <span class="status-pill">Active Venture · 2026</span>
@@ -1730,55 +1704,81 @@ footer.foot a:hover {
                 <span class="tech-tag">iOS</span>
                 <span class="tech-tag">Swift 6</span>
                 <span class="tech-tag">Flutter</span>
-                <span class="tech-tag">CoreBluetooth</span>
                 <span class="tech-tag">Node.js</span>
                 <span class="tech-tag">PostgreSQL</span>
+                <span class="tech-tag">Product Engineering</span>
               </div>
             </div>
             <div>
               <ul class="bullets">
-                <li>Independent product studio where I design, architect, and ship production applications end to end from database schemas to App Store release.</li>
-                <li>Created and published <b>Vive Move</b> (App Store live) and <b>SecureVault</b> (Open Source on Swift Package Manager and CocoaPods).</li>
-                <li>Open to selective technical advisory: iOS architecture audits, medical device integration, and zero-defect release strategy.</li>
+                <li>Independent studio where I architect and ship production applications end to end from database schemas to App Store release pipelines.</li>
+                <li>Shipped <b>Vive Move</b> (live on the App Store) and authored <b>SecureVault</b> (open-source iOS cryptographic SDK on SPM and CocoaPods).</li>
+                <li>Available for selective technical engagements: mobile architecture reviews, security auditing, and zero-downtime release engineering.</li>
               </ul>
             </div>
           </div>
         </article>
 
-        <!-- CGM Healthcare -->
-        <article class="spotlight-card rv" data-category="ble">
+        <!-- Private Aviation Platform -->
+        <article class="spotlight-card rv" data-category="enterprise">
           <div class="card-grid">
             <div class="card-header-meta">
-              <span class="badge-pill accent">Clinical HealthTech</span>
+              <span class="badge-pill accent">Private Aviation Platform</span>
+              <h3>Private Aviation Fleet Booking Engine</h3>
+              <p class="where">UST · Senior iOS Engineer · 2023 – 2025</p>
+              <div class="tech-stack-row">
+                <span class="tech-tag">Swift</span>
+                <span class="tech-tag">Server-Driven UI</span>
+                <span class="tech-tag">GraphQL</span>
+                <span class="tech-tag">Clean Architecture</span>
+                <span class="tech-tag">XCTest</span>
+              </div>
+            </div>
+            <div>
+              <ul class="bullets">
+                <li>High-concurrency private aviation booking and fleet management mobile platform built on a dynamic <b>Server-Driven UI</b> infrastructure.</li>
+                <li>Screens update dynamically via remote schema configurations, delivering instant campaign and layout updates without waiting for App Store binary approvals.</li>
+                <li>Spearheaded GraphQL migration that eliminated REST over-fetching, cutting mobile data payloads by <b>30%</b> and accelerating screen hydration.</li>
+                <li>Designed modular Clean Architecture components, reducing onboarding ramp-up for new iOS engineers by 50%.</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <!-- CGM Healthcare Platform -->
+        <article class="spotlight-card rv" data-category="health">
+          <div class="card-grid">
+            <div class="card-header-meta">
+              <span class="badge-pill">Clinical HealthTech</span>
               <h3>Continuous Glucose Monitoring Platform</h3>
               <p class="where">Innominds · iOS Technical Lead · 2025 – 2026</p>
               <div class="tech-stack-row">
                 <span class="tech-tag">Swift</span>
                 <span class="tech-tag">SwiftUI</span>
-                <span class="tech-tag">CoreBluetooth</span>
+                <span class="tech-tag">Firestore Sync</span>
                 <span class="tech-tag">Combine</span>
-                <span class="tech-tag">Firestore</span>
                 <span class="tech-tag">Datadog</span>
+                <span class="tech-tag">ChatGPT API</span>
               </div>
             </div>
             <div>
               <ul class="bullets">
-                <li>Architected continuous glucose monitoring iOS system connecting to BLE sensors over CoreBluetooth with strict clinical reliability standards.</li>
-                <li>Rewrote the wireless communication pipeline, increasing connection retention by <b>40%</b> and eliminating sync dropouts in busy RF environments.</li>
-                <li>Engineered offline-first Firestore synchronization with multi-device conflict resolution and real-time LLM-driven clinical insights.</li>
-                <li>Led <b>6 iOS engineers</b>, establishing rigorous TDD and code review gates reaching <b>85%+ test coverage</b> in XCTest and XCUITest.</li>
+                <li>Owned mobile architecture and App Store delivery for continuous glucose monitoring devices built on clean module boundaries and single unidirectional data flow.</li>
+                <li>Rewrote the wireless communication layer, elevating connection reliability by <b>40%</b> and eliminating sync dropouts in busy clinical environments.</li>
+                <li>Built real-time Firestore sync with multi-device conflict resolution, offline-first consistency, and an LLM-powered clinical insight assistant.</li>
+                <li>Led and mentored <b>6 iOS engineers</b>, enforcing strict TDD and code review gates reaching <b>85%+ test coverage</b> in XCTest and XCUITest.</li>
               </ul>
             </div>
           </div>
         </article>
 
         <!-- SecureVault SDK -->
-        <article class="spotlight-card rv" data-category="oss">
+        <article class="spotlight-card rv" data-category="security">
           <div class="card-grid">
             <div class="card-header-meta">
-              <span class="badge-pill">Open Source SDK</span>
+              <span class="badge-pill">Open Source Security SDK</span>
               <h3><a href="https://github.com/prakash-eppala/SecureVault" target="_blank" rel="noopener">SecureVault SDK <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" style="width:14px;height:14px" aria-hidden="true"><path d="M5 11L11 5M11 5H6M11 5V10"/></svg></a></h3>
-              <p class="where">Author · Swift Package &amp; CocoaPod · Production Security</p>
+              <p class="where">Author · Swift Package &amp; CocoaPod · Zero Dependencies</p>
               <div class="tech-stack-row">
                 <span class="tech-tag">Swift 6</span>
                 <span class="tech-tag">CryptoKit</span>
@@ -1789,17 +1789,17 @@ footer.foot a:hover {
             </div>
             <div>
               <ul class="bullets">
-                <li>Policy-driven mobile storage SDK: client applications declare sensitivity requirements, and SecureVault routes to the Keychain, encrypted SQLite, or Secure Enclave with automated fail-closed guarantees.</li>
-                <li>Hardware-bound keys utilizing Secure Enclave and biometric gating (TouchID / FaceID) with ECIES encryption on Apple CryptoKit.</li>
-                <li>Crash-safe automatic key rotation, seamless data migration, and cryptographic tamper detection on local stores.</li>
-                <li>Modern ergonomic API featuring <code>@SecureStorage</code> property wrappers and SwiftUI <code>BiometricGate</code> controls with zero third-party dependencies.</li>
+                <li>Policy-driven mobile storage SDK: client apps declare sensitivity tiers, and SecureVault routes to the Keychain, encrypted SQLite, or Secure Enclave with automated fail-closed guarantees.</li>
+                <li>Hardware-bound cryptographic keys using Secure Enclave, TouchID / FaceID biometric gating, and ECIES on Apple CryptoKit.</li>
+                <li>Engineered crash-safe key rotation, transparent migrations, and local tamper detection on encrypted files and data stores.</li>
+                <li>Modern ergonomic developer API featuring <code>@SecureStorage</code> property wrappers and SwiftUI <code>BiometricGate</code> controls with zero third-party dependencies.</li>
               </ul>
             </div>
           </div>
         </article>
 
         <!-- Vive Move -->
-        <article class="spotlight-card rv" data-category="store">
+        <article class="spotlight-card rv" data-category="consumer">
           <div class="card-grid">
             <div class="card-header-meta">
               <span class="badge-pill">App Store Live</span>
@@ -1811,39 +1811,40 @@ footer.foot a:hover {
                 <span class="tech-tag">HealthKit</span>
                 <span class="tech-tag">Node.js</span>
                 <span class="tech-tag">PostgreSQL</span>
-                <span class="tech-tag">React Admin</span>
+                <span class="tech-tag">React Console</span>
               </div>
             </div>
             <div>
               <ul class="bullets">
-                <li>Privacy-conscious health and fitness companion with Apple Health and Health Connect telemetry, live GPS workout tracking, and interactive progress charts.</li>
-                <li>Curated 1,000+ item regional nutrition catalog with offline-capable search and sub-second nutrient aggregation.</li>
-                <li>Built a hardened Node.js authentication gateway with 15-minute rotating JWTs, replay detection, RBAC, and 36 automated Jest test suites.</li>
-                <li>Engineered React and TypeScript operations console for push alerts and analytics with automated CI/CD deployments to Railway.</li>
+                <li>Privacy-first health and nutrition companion with Apple Health / Health Connect sync, live GPS workout routes, and interactive progress visualizations.</li>
+                <li>Over 1,000-item regional nutrition catalog with sub-second offline search and aggregated daily macronutrient summaries.</li>
+                <li>Built a hardened Node.js authentication gateway issuing 15-minute rotating JWTs with replay detection, RBAC, and 36 automated Jest test suites.</li>
+                <li>Designed a React and TypeScript operations console for push campaigns and analytics with automated CI/CD deployments to Railway.</li>
               </ul>
             </div>
           </div>
         </article>
 
-        <!-- Private Aviation Platform -->
-        <article class="spotlight-card rv" data-category="all">
+        <!-- Enterprise Logistics Suite -->
+        <article class="spotlight-card rv" data-category="enterprise">
           <div class="card-grid">
             <div class="card-header-meta">
-              <span class="badge-pill">Aviation &amp; Logistics</span>
-              <h3>Private Aviation Booking Platform</h3>
-              <p class="where">UST · Senior iOS Engineer · 2023 – 2025</p>
+              <span class="badge-pill">Industrial Mobility</span>
+              <h3>Enterprise Logistics &amp; Warehouse Suite</h3>
+              <p class="where">CommScope · iOS Developer · 2014 – 2021</p>
               <div class="tech-stack-row">
+                <span class="tech-tag">Objective-C</span>
                 <span class="tech-tag">Swift</span>
-                <span class="tech-tag">Clean Architecture</span>
-                <span class="tech-tag">GraphQL</span>
-                <span class="tech-tag">Server-Driven UI</span>
+                <span class="tech-tag">Offline Sync</span>
+                <span class="tech-tag">Zebra Scanners</span>
+                <span class="tech-tag">Peer-to-Peer</span>
               </div>
             </div>
             <div>
               <ul class="bullets">
-                <li>High-concurrency private flight reservation and fleet dispatch platform built with dynamic Server-Driven UI, updating application layouts without App Store rebuilds.</li>
-                <li>Migrated core REST APIs to GraphQL, eliminating over-fetching and decreasing mobile payload size by <b>30%</b>.</li>
-                <li>Structured reusable Clean Architecture modules that cut onboarding time for new engineers by half.</li>
+                <li>Delivered Pick &amp; Pack and Bill of Lading enterprise applications used by thousands of warehouse operators across <b>7+ years</b> of continuous delivery.</li>
+                <li>Integrated hardware barcode scanners (Zebra and Socket Mobile) with custom serial protocols and zero-latency scan decoders.</li>
+                <li>Engineered peer-to-peer iPad and iPod touch sync protocols ensuring seamless data handoffs during warehouse workflows with robust offline caching.</li>
               </ul>
             </div>
           </div>
@@ -1853,11 +1854,11 @@ footer.foot a:hover {
     </div>
   </section>
 
-  <!-- EXPERIENCE TIMELINE -->
+  <!-- CAREER EXPERIENCE TIMELINE -->
   <section class="band" id="experience" aria-label="Career Trajectory">
     <div class="wrap">
       <div class="shead rv">
-        <span class="idx mono">03 — Career Experience</span>
+        <span class="idx mono">03 — Career Trajectory</span>
         <span class="rule" aria-hidden="true"></span>
         <span class="mono">2014 → Present</span>
       </div>
@@ -1872,13 +1873,13 @@ footer.foot a:hover {
           <div class="timeline-body">
             <div class="timeline-title-row">
               <h3>iOS Technical Lead</h3>
-              <span class="timeline-domain-tag">Healthcare IoT &amp; BLE</span>
+              <span class="timeline-domain-tag">Healthcare &amp; IoT</span>
             </div>
             <p class="timeline-subtitle">Continuous Glucose Monitoring platform</p>
             <ul class="bullets">
-              <li>Owned mobile architecture and App Store delivery for continuous glucose monitoring devices.</li>
-              <li>Eliminated memory leaks and background task halts via Xcode Instruments profiling, increasing crash-free sessions to 99.8%.</li>
-              <li>Orchestrated full release pipelines across TestFlight beta cohorts, phased rollout, and rapid hotfixes.</li>
+              <li>Owned end-to-end mobile architecture and App Store releases for medical sensor applications.</li>
+              <li>Eliminated memory leaks and background task freezes using Instruments profiling, elevating crash-free sessions to 99.8%.</li>
+              <li>Orchestrated full release operations: phased TestFlight beta rollouts, security compliance, and zero-downtime hotfix strategy.</li>
             </ul>
           </div>
         </article>
@@ -1895,8 +1896,8 @@ footer.foot a:hover {
             </div>
             <p class="timeline-subtitle">High-traffic fleet booking &amp; client platform</p>
             <ul class="bullets">
-              <li>Designed iOS client infrastructure in Swift featuring dynamic server-driven UI schemas.</li>
-              <li>Collaborated across product, UI/UX, and cloud engineering teams in bi-weekly Agile releases with strict automated regression gates.</li>
+              <li>Architected native iOS client platform in Swift leveraging Server-Driven UI for dynamic screen composition.</li>
+              <li>Partnered across product, UI/UX, and cloud backend teams in bi-weekly Agile sprints with automated regression testing.</li>
             </ul>
           </div>
         </article>
@@ -1909,12 +1910,12 @@ footer.foot a:hover {
           <div class="timeline-body">
             <div class="timeline-title-row">
               <h3>Senior Technical Associate — iOS</h3>
-              <span class="timeline-domain-tag">Cross-Platform Modernization</span>
+              <span class="timeline-domain-tag">Modernization &amp; Flutter</span>
             </div>
             <p class="timeline-subtitle">Radwell UK mobile application modernization</p>
             <ul class="bullets">
               <li>Led 4 engineers in migrating core warehouse logistics Objective-C modules into modular Swift with protocol-oriented abstraction layers.</li>
-              <li>Delivered a cross-platform Flutter experience for UK industrial supply customers across iOS and Android with sub-second catalog search.</li>
+              <li>Shipped cross-platform Flutter experience for UK industrial supply clients across iOS and Android with sub-second catalog search.</li>
             </ul>
           </div>
         </article>
@@ -1927,9 +1928,9 @@ footer.foot a:hover {
           <div class="timeline-body">
             <div class="timeline-title-row">
               <h3>Mobile Application Developer — iOS</h3>
-              <span class="timeline-domain-tag">Enterprise Mobile</span>
+              <span class="timeline-domain-tag">Enterprise Mobility</span>
             </div>
-            <p class="timeline-subtitle">Industrial warehouse logistics &amp; BLE barcode scanning</p>
+            <p class="timeline-subtitle">Warehouse logistics &amp; hardware scanner integration</p>
             <ul class="bullets">
               <li>Maintained Pick &amp; Pack logistics iOS applications serving thousands of enterprise warehouse workers over seven years.</li>
               <li>Integrated Socket Mobile and Zebra Bluetooth hardware scanners, building peer-to-peer iPad sync with fault-tolerant offline caches.</li>
@@ -1947,69 +1948,67 @@ footer.foot a:hover {
       <div class="shead rv">
         <span class="idx mono">04 — Core Competencies</span>
         <span class="rule" aria-hidden="true"></span>
-        <span class="mono">Technical Depth</span>
+        <span class="mono">Architectural Breadth</span>
       </div>
 
       <div class="bento-grid rv">
 
         <div class="bento-card">
           <div class="bento-header">
-            <h4>iOS &amp; Swift Mastery</h4>
+            <h4>Swift &amp; SwiftUI Systems</h4>
           </div>
           <ul class="bento-tags">
             <li class="bento-tag">Swift 6</li>
             <li class="bento-tag">SwiftUI</li>
             <li class="bento-tag">UIKit</li>
-            <li class="bento-tag">Swift Concurrency</li>
+            <li class="bento-tag">Actors &amp; Concurrency</li>
             <li class="bento-tag">Combine</li>
             <li class="bento-tag">Objective-C</li>
-            <li class="bento-tag">Instruments</li>
-            <li class="bento-tag">Memory Audits</li>
+            <li class="bento-tag">Xcode Instruments</li>
+            <li class="bento-tag">Memory Leak Audits</li>
           </ul>
         </div>
 
         <div class="bento-card">
           <div class="bento-header">
-            <h4>Hardware &amp; BLE</h4>
+            <h4>Dynamic UI &amp; Architecture</h4>
           </div>
           <ul class="bento-tags">
-            <li class="bento-tag">CoreBluetooth</li>
-            <li class="bento-tag">BLE 5.4</li>
-            <li class="bento-tag">Medical IoT</li>
-            <li class="bento-tag">HealthKit</li>
-            <li class="bento-tag">State Recovery</li>
-            <li class="bento-tag">Barcode Scanners</li>
-            <li class="bento-tag">Background Sync</li>
-          </ul>
-        </div>
-
-        <div class="bento-card">
-          <div class="bento-header">
-            <h4>Architecture &amp; Quality</h4>
-          </div>
-          <ul class="bento-tags">
+            <li class="bento-tag">Server-Driven UI</li>
             <li class="bento-tag">Clean Architecture</li>
             <li class="bento-tag">Modular Frameworks</li>
             <li class="bento-tag">MVVM &amp; VIPER</li>
-            <li class="bento-tag">TDD (85%+ Coverage)</li>
-            <li class="bento-tag">XCTest</li>
-            <li class="bento-tag">XCUITest</li>
+            <li class="bento-tag">GraphQL</li>
             <li class="bento-tag">SPM &amp; CocoaPods</li>
+            <li class="bento-tag">Dependency Injection</li>
           </ul>
         </div>
 
         <div class="bento-card">
           <div class="bento-header">
-            <h4>Security &amp; Cloud</h4>
+            <h4>Security &amp; Cryptography</h4>
           </div>
           <ul class="bento-tags">
             <li class="bento-tag">CryptoKit</li>
             <li class="bento-tag">Secure Enclave</li>
+            <li class="bento-tag">BiometricGate</li>
             <li class="bento-tag">Keychain Services</li>
-            <li class="bento-tag">Firestore</li>
-            <li class="bento-tag">GraphQL</li>
-            <li class="bento-tag">Fastlane</li>
-            <li class="bento-tag">Datadog</li>
+            <li class="bento-tag">Fail-Closed Security</li>
+            <li class="bento-tag">Data Protection Classes</li>
+          </ul>
+        </div>
+
+        <div class="bento-card">
+          <div class="bento-header">
+            <h4>Leadership &amp; Quality</h4>
+          </div>
+          <ul class="bento-tags">
+            <li class="bento-tag">Team Mentorship (6+ devs)</li>
+            <li class="bento-tag">TDD (85%+ Coverage)</li>
+            <li class="bento-tag">XCTest &amp; XCUITest</li>
+            <li class="bento-tag">Fastlane CI/CD</li>
+            <li class="bento-tag">App Store Governance</li>
+            <li class="bento-tag">Datadog &amp; Crashlytics</li>
           </ul>
         </div>
 
@@ -2030,24 +2029,24 @@ footer.foot a:hover {
         <div class="rv">
           <h2 style="max-width:18ch; margin-bottom:22px">Eleven years committed to engineering discipline.</h2>
           <p class="lede">
-            I began building enterprise logistics iOS apps on Objective-C in 2014 and have stayed close to the hardware layer ever since from industrial laser barcode readers to subcutaneous continuous glucose monitors.
+            I started in 2014 building native enterprise iOS applications in Objective-C. Over the last eleven years, I have architected high-scale platforms across consumer aviation, medical health systems, and industrial mobility.
           </p>
           <p class="lede" style="margin-top:16px">
-            The work I excel at sits directly at the intersection of wireless hardware and software architecture: keeping radio links resilient while building clean, modular Swift codebases that scale effortlessly. Through Naptrix Labs, I continuously push modern mobile craft into live software.
+            My philosophy centers on clear module boundaries, bulletproof offline resilience, and building engineering teams that ship with confidence. Through Naptrix Labs, I continuously build and publish production software to the App Store.
           </p>
 
           <ul class="strengths-grid">
             <li>
               <span class="strength-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5"/></svg></span>
-              <span>Engineering mentorship and team leadership across 4 to 6 engineers.</span>
+              <span>Engineering mentorship and cross-functional leadership across 4 to 6 engineers.</span>
             </li>
             <li>
               <span class="strength-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5"/></svg></span>
-              <span>End-to-end mobile architecture reviews, modular decoupling, and security audits.</span>
+              <span>Comprehensive mobile architecture audits, modular decoupling, and security compliance.</span>
             </li>
             <li>
               <span class="strength-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5"/></svg></span>
-              <span>Full lifecycle App Store governance, automated TestFlight pipelines, and zero-downtime releases.</span>
+              <span>Full lifecycle App Store governance, automated TestFlight pipelines, and hotfix strategies.</span>
             </li>
           </ul>
         </div>
@@ -2060,18 +2059,18 @@ footer.foot a:hover {
             </div>
             <div class="fact-row">
               <span class="fact-label">Location</span>
-              <span>Hyderabad, India (Available for Global &amp; Remote roles)</span>
+              <span>Hyderabad, India (Open to Global Remote &amp; Relocation)</span>
             </div>
             <div class="fact-row">
-              <span class="fact-label">Focus Roles</span>
+              <span class="fact-label">Target Roles</span>
               <span>iOS Technical Lead · Mobile Architect · Staff iOS Engineer</span>
             </div>
             <div class="fact-row">
-              <span class="fact-label">Domains</span>
-              <span>Healthcare IoT &amp; BLE · Private Aviation · Mobile Security SDKs</span>
+              <span class="fact-label">Key Domains</span>
+              <span>Consumer Apps · Private Aviation · HealthTech · Enterprise Mobile · Security SDKs</span>
             </div>
             <div class="fact-row">
-              <span class="fact-label">Venture</span>
+              <span class="fact-label">Studio</span>
               <span>Founder, Naptrix Labs</span>
             </div>
           </div>
@@ -2091,9 +2090,9 @@ footer.foot a:hover {
 
       <div class="split-layout">
         <div class="rv">
-          <h2 style="max-width:16ch">Building or leading an iOS team? Let's connect.</h2>
+          <h2 style="max-width:16ch">Building or leading an iOS team? Let's talk.</h2>
           <p class="lede" style="margin-top:18px">
-            The quickest way to reach me is directly via email. I respond promptly to specific inquiries regarding technical leadership, team shape, and architectural challenges.
+            The quickest way to reach me is directly via email. I respond promptly to inquiries regarding technical leadership, team shape, and architectural challenges.
           </p>
 
           <div class="contact-interactive-panel">
@@ -2115,18 +2114,18 @@ footer.foot a:hover {
           <div class="facts-table">
             <div class="fact-row">
               <span class="fact-label">LinkedIn</span>
-              <span><a href="https://www.linkedin.com/in/prakash-eppala" target="_blank" rel="noopener" style="color:var(--signal)">linkedin.com/in/prakash-eppala</a></span>
+              <span><a href="https://www.linkedin.com/in/prakash-eppala" target="_blank" rel="noopener" style="color:var(--accent)">linkedin.com/in/prakash-eppala</a></span>
             </div>
             <div class="fact-row">
               <span class="fact-label">GitHub</span>
-              <span><a href="https://github.com/prakash-eppala" target="_blank" rel="noopener" style="color:var(--signal)">github.com/prakash-eppala</a></span>
+              <span><a href="https://github.com/prakash-eppala" target="_blank" rel="noopener" style="color:var(--accent)">github.com/prakash-eppala</a></span>
             </div>
             <div class="fact-row">
               <span class="fact-label">App Store</span>
-              <span><a href="https://apps.apple.com/in/app/vive-move/id6800129617" target="_blank" rel="noopener" style="color:var(--signal)">Vive Move</a></span>
+              <span><a href="https://apps.apple.com/in/app/vive-move/id6800129617" target="_blank" rel="noopener" style="color:var(--accent)">Vive Move</a></span>
             </div>
             <div class="fact-row">
-              <span class="fact-label">Official Studio</span>
+              <span class="fact-label">Studio</span>
               <span><a href="https://naptrixlabs.com" target="_blank" rel="noopener" style="color:var(--pulse)">naptrixlabs.com</a></span>
             </div>
           </div>
@@ -2165,9 +2164,9 @@ footer.foot a:hover {
     </div>
     <ul class="palette-list" id="palette-options" role="listbox">
       <li class="palette-item active" role="option" data-action="work"><span>Jump to Selected Work</span><span class="palette-item-tag">Section</span></li>
-      <li class="palette-item" role="option" data-action="lab"><span>Jump to BLE Simulator Lab</span><span class="palette-item-tag">Interactive</span></li>
-      <li class="palette-item" role="option" data-action="experience"><span>Jump to Career Experience</span><span class="palette-item-tag">Section</span></li>
-      <li class="palette-item" role="option" data-action="expertise"><span>Jump to Expertise Bento Matrix</span><span class="palette-item-tag">Section</span></li>
+      <li class="palette-item" role="option" data-action="studio"><span>Jump to Architecture Studio</span><span class="palette-item-tag">Interactive</span></li>
+      <li class="palette-item" role="option" data-action="experience"><span>Jump to Career Trajectory</span><span class="palette-item-tag">Section</span></li>
+      <li class="palette-item" role="option" data-action="expertise"><span>Jump to Core Competencies</span><span class="palette-item-tag">Section</span></li>
       <li class="palette-item" role="option" data-action="resume"><span>Download Résumé (PDF)</span><span class="palette-item-tag">File</span></li>
       <li class="palette-item" role="option" data-action="copy-email"><span>Copy Email Address</span><span class="palette-item-tag">Action</span></li>
       <li class="palette-item" role="option" data-action="theme"><span>Toggle Dark / Light Theme</span><span class="palette-item-tag">Preference</span></li>
@@ -2189,17 +2188,16 @@ footer.foot a:hover {
   var root = document.documentElement;
   var isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Set current year
   var yrEl = document.getElementById('current-year');
   if (yrEl) yrEl.textContent = new Date().getFullYear();
 
-  // 1. Toast Notification System
+  // 1. Toast Alert System
   var toastContainer = document.getElementById('toast-container');
   function showToast(message) {
     if (!toastContainer) return;
     var toast = document.createElement('div');
     toast.className = 'toast';
-    toast.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;color:var(--signal)"><path d="M3 8.5l3.2 3.2L13 5"/></svg><span>' + message + '</span>';
+    toast.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;color:var(--accent)"><path d="M3 8.5l3.2 3.2L13 5"/></svg><span>' + message + '</span>';
     toastContainer.appendChild(toast);
     requestAnimationFrame(function() {
       toast.classList.add('show');
@@ -2210,7 +2208,7 @@ footer.foot a:hover {
     }, 2800);
   }
 
-  // 2. Clipboard Copy Actions
+  // 2. Copy Actions
   function setupCopyButton(btnId) {
     var btn = document.getElementById(btnId);
     if (!btn) return;
@@ -2221,29 +2219,19 @@ footer.foot a:hover {
         btn.classList.add('copied');
         showToast('Copied ' + textToCopy + ' to clipboard');
         setTimeout(function() { btn.classList.remove('copied'); }, 2000);
-      }).catch(function() {
-        showToast('Unable to copy automatically');
       });
     });
   }
   setupCopyButton('btn-copy-email');
   setupCopyButton('btn-copy-phone');
 
-  // Copy Swift code snippet
+  // Copy Swift Code
   var copySwiftBtn = document.getElementById('copy-swift-code');
   if (copySwiftBtn) {
     copySwiftBtn.addEventListener('click', function() {
-      var code = `final class CGMTelemetryPipeline: Sendable {
-    private let radioStream: AsyncStream<SensorPacket>
-    
-    func observeReadings() async {
-        for await packet in radioStream {
-            guard packet.isValidCRC else { continue }
-            await telemetryEngine.process(packet)
-        }
-    }
-}`;
-      navigator.clipboard.writeText(code).then(function() {
+      var codeEl = document.getElementById('code-content');
+      var codeText = codeEl ? codeEl.innerText : '';
+      navigator.clipboard.writeText(codeText).then(function() {
         copySwiftBtn.textContent = 'Copied!';
         showToast('Swift code snippet copied');
         setTimeout(function() { copySwiftBtn.textContent = 'Copy Swift'; }, 2000);
@@ -2251,7 +2239,7 @@ footer.foot a:hover {
     });
   }
 
-  // 3. Theme Toggle Engine
+  // 3. Theme Toggle
   var themeToggleBtn = document.getElementById('theme-toggle');
   var darkIcon = document.getElementById('theme-icon-dark');
   var lightIcon = document.getElementById('theme-icon-light');
@@ -2268,7 +2256,6 @@ footer.foot a:hover {
     }
   }
 
-  // Check saved theme or system preference
   var savedTheme = null;
   try { savedTheme = localStorage.getItem('theme'); } catch(e) {}
   if (savedTheme) {
@@ -2288,17 +2275,7 @@ footer.foot a:hover {
     });
   }
 
-  // 4. Scroll Progress Bar
-  var scrollBarProgress = document.getElementById('scroll-bar-progress');
-  window.addEventListener('scroll', function() {
-    var totalHeight = document.documentElement.scrollHeight - window.innerHeight;
-    if (totalHeight > 0 && scrollBarProgress) {
-      var progress = (window.scrollY / totalHeight) * 100;
-      scrollBarProgress.style.width = Math.min(100, Math.max(0, progress)) + '%';
-    }
-  }, { passive: true });
-
-  // 5. Scroll Reveal IntersectionObserver
+  // 4. Scroll Reveal
   var revealElements = document.querySelectorAll('.rv');
   if ('IntersectionObserver' in window && !isReducedMotion) {
     var observer = new IntersectionObserver(function(entries) {
@@ -2314,7 +2291,7 @@ footer.foot a:hover {
     revealElements.forEach(function(el) { el.classList.add('in'); });
   }
 
-  // 6. Metrics Count-Up Animation
+  // 5. Count-Up
   var countElements = document.querySelectorAll('[data-count]');
   var hasCounted = false;
   function triggerCountUp() {
@@ -2345,19 +2322,7 @@ footer.foot a:hover {
     }, { threshold: 0.3 }).observe(metricStrip);
   }
 
-  // 7. Mouse Spotlight Tracking on Cards
-  var cards = document.querySelectorAll('.spotlight-card');
-  cards.forEach(function(card) {
-    card.addEventListener('mousemove', function(e) {
-      var rect = card.getBoundingClientRect();
-      var x = e.clientX - rect.left;
-      var y = e.clientY - rect.top;
-      card.style.setProperty('--mouse-x', x + 'px');
-      card.style.setProperty('--mouse-y', y + 'px');
-    });
-  });
-
-  // 8. Project Category Filter Tabs
+  // 6. Project Filter Tabs
   var filterTabs = document.querySelectorAll('.filter-tab');
   var projectCards = document.querySelectorAll('.spotlight-card');
   filterTabs.forEach(function(tab) {
@@ -2380,7 +2345,7 @@ footer.foot a:hover {
     });
   });
 
-  // 9. Mobile Navigation Drawer
+  // 7. Mobile Drawer
   var menuBtn = document.getElementById('mobile-menu-btn');
   var mobileDrawer = document.getElementById('mobile-drawer');
   if (menuBtn && mobileDrawer) {
@@ -2402,66 +2367,127 @@ footer.foot a:hover {
     });
   }
 
-  // 10. Interactive BLE Simulator Lab
-  var glucoseVal = document.getElementById('tele-glucose-val');
-  var rssiVal = document.getElementById('tele-rssi-val');
-  var dropVal = document.getElementById('tele-drop-val');
+  // 8. Interactive Architecture Studio Modes
   var labStateText = document.getElementById('lab-state-text');
-  var labBtns = document.querySelectorAll('.lab-actions-row .lab-btn');
+  var labTitle = document.getElementById('lab-panel-title');
+  var labDesc = document.getElementById('lab-panel-desc');
+  var teleLbl1 = document.getElementById('tele-lbl-1');
+  var teleVal1 = document.getElementById('tele-val-1');
+  var teleLbl2 = document.getElementById('tele-lbl-2');
+  var teleVal2 = document.getElementById('tele-val-2');
+  var teleLbl3 = document.getElementById('tele-lbl-3');
+  var teleVal3 = document.getElementById('tele-val-3');
+  var codeFilename = document.getElementById('code-filename');
+  var codeContent = document.getElementById('code-content');
+  var actionsContainer = document.getElementById('lab-actions-container');
 
-  function setLabActive(activeBtn) {
-    labBtns.forEach(function(b) { b.classList.remove('active'); });
-    if (activeBtn) activeBtn.classList.add('active');
-  }
+  var modeSDUI = document.getElementById('tab-mode-sdui');
+  var modeConcurrency = document.getElementById('tab-mode-concurrency');
+  var modeSecurity = document.getElementById('tab-mode-security');
+  var modeIoT = document.getElementById('tab-mode-iot');
 
-  var btnLabStream = document.getElementById('btn-lab-stream');
-  var btnLabSpike = document.getElementById('btn-lab-spike');
-  var btnLabDrop = document.getElementById('btn-lab-drop');
-  var btnLabReconnect = document.getElementById('btn-lab-reconnect');
-
-  if (btnLabStream) {
-    btnLabStream.addEventListener('click', function() {
-      setLabActive(btnLabStream);
-      glucoseVal.innerHTML = '108 <span style="font-size:12px;color:var(--muted)">mg/dL</span>';
-      rssiVal.innerHTML = '-54 <span style="font-size:12px;color:var(--muted)">dBm</span>';
-      dropVal.textContent = '0.00%';
-      labStateText.textContent = 'STREAMING TELEMETRY (250 Hz)';
-      showToast('Radio state: Nominal continuous telemetry');
-    });
-  }
-  if (btnLabSpike) {
-    btnLabSpike.addEventListener('click', function() {
-      setLabActive(btnLabSpike);
-      glucoseVal.innerHTML = '<span style="color:var(--pulse)">184</span> <span style="font-size:12px;color:var(--muted)">mg/dL</span>';
-      rssiVal.innerHTML = '-58 <span style="font-size:12px;color:var(--muted)">dBm</span>';
-      labStateText.textContent = 'RAPID EXCURSION DETECTED (+3.2 mg/dL/min)';
-      showToast('Simulated post-meal glycemic excursion');
-    });
-  }
-  if (btnLabDrop) {
-    btnLabDrop.addEventListener('click', function() {
-      setLabActive(btnLabDrop);
-      rssiVal.innerHTML = '<span style="color:#FF6B6B">-94</span> <span style="font-size:12px;color:var(--muted)">dBm</span>';
-      dropVal.textContent = '12.4%';
-      labStateText.textContent = 'RADIO LINK WEAK / RETRYING PACKETS';
-      showToast('Radio link degraded: Cache queue activated');
-    });
-  }
-  if (btnLabReconnect) {
-    btnLabReconnect.addEventListener('click', function() {
-      setLabActive(btnLabReconnect);
-      labStateText.textContent = 'RE-ESTABLISHING COREBLUETOOTH PERIPHERAL';
-      setTimeout(function() {
-        glucoseVal.innerHTML = '112 <span style="font-size:12px;color:var(--muted)">mg/dL</span>';
-        rssiVal.innerHTML = '-52 <span style="font-size:12px;color:var(--muted)">dBm</span>';
-        dropVal.textContent = '0.00%';
-        labStateText.textContent = 'RECONNECTED · CACHE SYNCHRONIZED';
-        showToast('Autonomous BLE reconnect successful');
-      }, 700);
+  function clearActiveModes() {
+    [modeSDUI, modeConcurrency, modeSecurity, modeIoT].forEach(function(btn) {
+      if (btn) btn.classList.remove('active');
     });
   }
 
-  // 11. Command Palette (Cmd + K)
+  if (modeSDUI) {
+    modeSDUI.addEventListener('click', function() {
+      clearActiveModes();
+      modeSDUI.classList.add('active');
+      labStateText.textContent = 'SERVER-DRIVEN UI PIPELINE ACTIVE';
+      labTitle.textContent = 'Server-Driven UI Engine';
+      labDesc.textContent = 'Architecting high-traffic platforms where screens dynamically recompose via backend JSON schemas without waiting for App Store binary reviews.';
+      teleLbl1.textContent = 'Layout Version'; teleVal1.innerHTML = 'v4.2 <span style="font-size:12px;color:var(--muted)">Hot</span>';
+      teleLbl2.textContent = 'Payload Delta'; teleVal2.innerHTML = '-30% <span style="font-size:12px;color:var(--muted)">GraphQL</span>';
+      teleLbl3.textContent = 'App Store Review'; teleVal3.textContent = '0 hrs';
+      codeFilename.textContent = 'ServerDrivenScreenRenderer.swift';
+      codeContent.innerHTML = `<span class="kw">struct</span> <span class="tp">DynamicScreenRenderer</span>: <span class="tp">View</span> {
+    <span class="kw">let</span> schema: <span class="tp">ScreenLayoutSchema</span>
+    
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="tp">View</span> {
+        <span class="tp">LazyVStack</span>(spacing: schema.spacing) {
+            <span class="tp">ForEach</span>(schema.components) { component <span class="kw">in</span>
+                <span class="tp">ComponentRegistry</span>.<span class="fn">resolve</span>(component)
+                    .<span class="fn">transition</span>(.opacity.<span class="fn">combined</span>(with: .move(edge: .top)))
+            }
+        }
+    }
+}`;
+      showToast('Switched to Server-Driven UI architecture mode');
+    });
+  }
+
+  if (modeConcurrency) {
+    modeConcurrency.addEventListener('click', function() {
+      clearActiveModes();
+      modeConcurrency.classList.add('active');
+      labStateText.textContent = 'SWIFT 6 ACTOR ISOLATION ACTIVE';
+      labTitle.textContent = 'Swift 6 Structured Concurrency';
+      labDesc.textContent = 'Eliminating data races at compile-time using Actor isolation, TaskGroups, and AsyncStream pipelines for real-time mobile event processing.';
+      teleLbl1.textContent = 'Data Races'; teleVal1.textContent = '0 detected';
+      teleLbl2.textContent = 'Actor Isolation'; teleVal2.innerHTML = 'Strict <span style="font-size:12px;color:var(--muted)">Swift 6</span>';
+      teleLbl3.textContent = 'Throughput'; teleVal3.textContent = '10k msgs/s';
+      codeFilename.textContent = 'EventPipelineActor.swift';
+      codeContent.innerHTML = `<span class="kw">actor</span> <span class="tp">TelemetryEventProcessor</span> {
+    <span class="kw">private var</span> eventCache: [<span class="tp">UUID</span>: <span class="tp">MobileEvent</span>] = [:]
+    
+    <span class="kw">func</span> <span class="fn">ingest</span>(_ event: <span class="tp">MobileEvent</span>) <span class="kw">async</span> {
+        eventCache[event.id] = event
+        <span class="kw">await</span> notifyDownstreamSubscribers(event)
+    }
+}`;
+      showToast('Switched to Swift 6 Concurrency mode');
+    });
+  }
+
+  if (modeSecurity) {
+    modeSecurity.addEventListener('click', function() {
+      clearActiveModes();
+      modeSecurity.classList.add('active');
+      labStateText.textContent = 'HARDWARE-BOUND SECURITY ENCLAVE';
+      labTitle.textContent = 'SecureVault Cryptographic Policy';
+      labDesc.textContent = 'Policy-driven mobile storage SDK: keys bound to the Secure Enclave and biometric gating (FaceID) with fail-closed cryptographic guarantees.';
+      teleLbl1.textContent = 'Enclave Key'; teleVal1.textContent = 'P-256 ECC';
+      teleLbl2.textContent = 'Biometric Gate'; teleVal2.textContent = 'FaceID Enforced';
+      teleLbl3.textContent = 'Storage Policy'; teleVal3.textContent = 'Fail-Closed';
+      codeFilename.textContent = 'SecureVaultGate.swift';
+      codeContent.innerHTML = `<span class="kw">@propertyWrapper</span>
+<span class="kw">public struct</span> <span class="tp">SecureStorage</span>&lt;<span class="tp">T</span>: <span class="tp">Codable</span>&gt; {
+    <span class="kw">private let</span> policy: <span class="tp">SecurityPolicy</span>
+    
+    <span class="kw">public var</span> wrappedValue: <span class="tp">T</span>? {
+        <span class="kw">get</span> { <span class="tp">SecureEnclaveVault</span>.<span class="fn">read</span>(policy: policy) }
+        <span class="kw">set</span> { <span class="tp">SecureEnclaveVault</span>.<span class="fn">write</span>(newValue, policy: policy) }
+    }
+}`;
+      showToast('Switched to SecureVault Security architecture mode');
+    });
+  }
+
+  if (modeIoT) {
+    modeIoT.addEventListener('click', function() {
+      clearActiveModes();
+      modeIoT.classList.add('active');
+      labStateText.textContent = 'HARDWARE AUTO-RECONNECT PIPELINE';
+      labTitle.textContent = 'Hardware & Offline Data Sync';
+      labDesc.textContent = 'Building resilient wireless peripheral state machines that survive RF interference, background execution limits, and reconnect with zero data loss.';
+      teleLbl1.textContent = 'Connection'; teleVal1.textContent = 'Active (BLE 5.4)';
+      teleLbl2.textContent = 'Offline Cache'; teleVal2.textContent = '1,420 synced';
+      teleLbl3.textContent = 'Packet Loss'; teleVal3.textContent = '0.00%';
+      codeFilename.textContent = 'PeripheralStateEngine.swift';
+      codeContent.innerHTML = `<span class="kw">final class</span> <span class="tp">PeripheralStateEngine</span>: <span class="tp">Sendable</span> {
+    <span class="kw">func</span> <span class="fn">handleDisconnection</span>() <span class="kw">async</span> {
+        <span class="kw">await</span> localCacheQueue.<span class="fn">flushPendingWrites</span>()
+        <span class="kw">await</span> peripheralManager.<span class="fn">startTargetedScan</span>(timeout: .seconds(30))
+    }
+}`;
+      showToast('Switched to Hardware & Offline Sync mode');
+    });
+  }
+
+  // 9. Command Palette (Cmd + K)
   var paletteModal = document.getElementById('palette-modal');
   var openPaletteBtn = document.getElementById('open-palette-btn');
   var paletteInput = document.getElementById('palette-input');
@@ -2508,7 +2534,7 @@ footer.foot a:hover {
       var action = item.getAttribute('data-action');
       closePalette();
       if (action === 'work') location.hash = '#work';
-      else if (action === 'lab') location.hash = '#lab';
+      else if (action === 'studio') location.hash = '#studio';
       else if (action === 'experience') location.hash = '#experience';
       else if (action === 'expertise') location.hash = '#expertise';
       else if (action === 'resume') window.open('assets/Prakash-Eppala-Resume.pdf', '_blank');
@@ -2522,8 +2548,8 @@ footer.foot a:hover {
     });
   });
 
-  // 12. Interactive Telemetry Canvas
-  var cv = document.getElementById('trace-canvas');
+  // 10. Cinematic Interactive Ambient Mesh Canvas (Layers AI Style)
+  var cv = document.getElementById('mesh-canvas');
   if (cv && cv.getContext) {
     var ctx = cv.getContext('2d');
     var w = 0, h = 0;
@@ -2531,7 +2557,7 @@ footer.foot a:hover {
     var animFrameId = null;
     var isCanvasVisible = true;
     var pointerX = -1000, pointerY = -1000;
-    var pointerStrength = 0;
+    var pointerActive = false;
 
     function resizeCanvas() {
       var rect = cv.getBoundingClientRect();
@@ -2546,100 +2572,87 @@ footer.foot a:hover {
       var rect = cv.getBoundingClientRect();
       pointerX = e.clientX - rect.left;
       pointerY = e.clientY - rect.top;
-      pointerStrength = 1.0;
+      pointerActive = true;
     });
     cv.addEventListener('pointerleave', function() {
-      pointerStrength = 0;
+      pointerActive = false;
     });
 
-    var t = 0;
-    function drawWave() {
+    // Particle nodes for subtle interactive mesh
+    var nodes = [];
+    var nodeCount = 38;
+    function initNodes() {
+      nodes = [];
+      for (var i = 0; i < nodeCount; i++) {
+        nodes.push({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          vx: (Math.random() - 0.5) * 0.45,
+          vy: (Math.random() - 0.5) * 0.45,
+          radius: Math.random() * 1.5 + 1.2
+        });
+      }
+    }
+
+    function drawMesh() {
       if (!isCanvasVisible || isReducedMotion) return;
       ctx.clearRect(0, 0, w, h);
 
       var isDark = (root.getAttribute('data-theme') !== 'light');
-      var signalColor = isDark ? '#3EE0C8' : '#007A6C';
-      var pulseColor = isDark ? '#FFA347' : '#B85900';
-      var gridColor = isDark ? '#1E2B3C' : '#D2DCE6';
+      var nodeColor = isDark ? 'rgba(56, 189, 248, 0.4)' : 'rgba(2, 132, 199, 0.3)';
+      var lineColor = isDark ? 'rgba(56, 189, 248, 0.08)' : 'rgba(2, 132, 199, 0.06)';
+      var highlightLine = isDark ? 'rgba(45, 212, 191, 0.28)' : 'rgba(13, 148, 136, 0.2)';
 
-      // Telemetry Grid
-      ctx.save();
-      ctx.strokeStyle = gridColor;
-      ctx.globalAlpha = 0.35;
-      ctx.lineWidth = 1;
-      var gridSpacing = 44;
-      for (var y = h; y > 0; y -= gridSpacing) {
-        ctx.beginPath();
-        ctx.moveTo(0, y + 0.5);
-        ctx.lineTo(w, y + 0.5);
-        ctx.stroke();
-      }
-      for (var x = 0; x < w; x += gridSpacing) {
-        ctx.beginPath();
-        ctx.moveTo(x + 0.5, 0);
-        ctx.lineTo(x + 0.5, h);
-        ctx.stroke();
-      }
-      ctx.restore();
+      // Update and draw nodes
+      for (var i = 0; i < nodes.length; i++) {
+        var n = nodes[i];
+        n.x += n.vx;
+        n.y += n.vy;
+        if (n.x < 0 || n.x > w) n.vx *= -1;
+        if (n.y < 0 || n.y > h) n.vy *= -1;
 
-      // ECG & BLE Telemetry Waveform
-      ctx.save();
-      ctx.strokeStyle = signalColor;
-      ctx.lineWidth = 1.8;
-      ctx.lineJoin = 'round';
-      ctx.lineCap = 'round';
-      ctx.beginPath();
-
-      var amp = h * 0.22;
-      var baseline = h * 0.65;
-
-      for (var px = 0; px <= w; px += 2) {
-        var u = px / Math.max(w, 1);
-        var v = Math.sin(u * 7.5 + t) * 0.45
-              + Math.sin(u * 15.2 - t * 1.2) * 0.22
-              + Math.sin(u * 3.1 + t * 0.4) * 0.35;
-
-        // Interactive pointer wave ripple
-        var distToPointer = Math.abs(px - pointerX);
-        if (pointerStrength > 0 && distToPointer < 140) {
-          var ripple = Math.sin((distToPointer / 140) * Math.PI * 3 - t * 4) * (1 - distToPointer / 140) * 0.6;
-          v += ripple * pointerStrength;
+        // Pointer proximity push
+        if (pointerActive) {
+          var dx = n.x - pointerX;
+          var dy = n.y - pointerY;
+          var dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 120 && dist > 0) {
+            var force = (120 - dist) / 120;
+            n.x += (dx / dist) * force * 1.5;
+            n.y += (dy / dist) * force * 1.5;
+          }
         }
 
-        var py = baseline - v * amp;
-        if (px === 0) ctx.moveTo(px, py);
-        else ctx.lineTo(px, py);
-      }
-      ctx.stroke();
-      ctx.restore();
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
+        ctx.fillStyle = nodeColor;
+        ctx.fill();
 
-      // Secondary carrier trace
-      ctx.save();
-      ctx.strokeStyle = pulseColor;
-      ctx.lineWidth = 1.2;
-      ctx.globalAlpha = 0.35;
-      ctx.beginPath();
-      for (var px2 = 0; px2 <= w; px2 += 3) {
-        var u2 = px2 / Math.max(w, 1);
-        var v2 = Math.sin(u2 * 5.2 + t * 0.7 + 1.2) * 0.35 + Math.sin(u2 * 11.4 - t * 0.8) * 0.2;
-        var py2 = baseline * 0.95 - v2 * (amp * 0.6);
-        if (px2 === 0) ctx.moveTo(px2, py2);
-        else ctx.lineTo(px2, py2);
+        // Connect nearby nodes
+        for (var j = i + 1; j < nodes.length; j++) {
+          var n2 = nodes[j];
+          var dist2 = Math.hypot(n.x - n2.x, n.y - n2.y);
+          if (dist2 < 140) {
+            ctx.beginPath();
+            ctx.moveTo(n.x, n.y);
+            ctx.lineTo(n2.x, n2.y);
+            var alpha = (1 - dist2 / 140) * (isDark ? 0.12 : 0.08);
+            ctx.strokeStyle = `rgba(56, 189, 248, ${alpha})`;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+          }
+        }
       }
-      ctx.stroke();
-      ctx.restore();
 
-      t += 0.008;
-      animFrameId = requestAnimationFrame(drawWave);
+      animFrameId = requestAnimationFrame(drawMesh);
     }
 
-    // Performance-critical: Pause animation when hero leaves viewport
     var heroEl = document.querySelector('.hero');
     if ('IntersectionObserver' in window && heroEl) {
       new IntersectionObserver(function(entries) {
         isCanvasVisible = entries[0].isIntersecting;
         if (isCanvasVisible && !animFrameId && !isReducedMotion) {
-          animFrameId = requestAnimationFrame(drawWave);
+          animFrameId = requestAnimationFrame(drawMesh);
         } else if (!isCanvasVisible && animFrameId) {
           cancelAnimationFrame(animFrameId);
           animFrameId = null;
@@ -2649,19 +2662,11 @@ footer.foot a:hover {
 
     window.addEventListener('resize', function() {
       resizeCanvas();
+      initNodes();
     });
     resizeCanvas();
-    if (!isReducedMotion) animFrameId = requestAnimationFrame(drawWave);
-  }
-
-  // 13. Telemetry Packet Counter Tick
-  var packetCounter = document.getElementById('tele-packet-counter');
-  if (packetCounter) {
-    var packetCount = 14208;
-    setInterval(function() {
-      packetCount += Math.floor(Math.random() * 4) + 1;
-      packetCounter.textContent = packetCount.toLocaleString();
-    }, 400);
+    initNodes();
+    if (!isReducedMotion) animFrameId = requestAnimationFrame(drawMesh);
   }
 
 })();
